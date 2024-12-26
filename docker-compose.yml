@@ -42,13 +42,25 @@ services:
     networks:
       - microbank-network
 
+  postgres-auth-service:
+    image: postgres:17-alpine
+    container_name: auth-db-container
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_db
+      POSTGRES_PASSWORD: auth_db
+    ports:
+      - "5431:5432"
+    networks:
+      - microbank-network
+
   postgres-account-service:
     image: postgres:17-alpine
     container_name: account-db-container
     environment:
       POSTGRES_DB: account_db
-      POSTGRES_USER: account_service
-      POSTGRES_PASSWORD: account_service
+      POSTGRES_USER: account_db
+      POSTGRES_PASSWORD: account_db
     ports:
       - "5432:5432"
     networks:
@@ -58,9 +70,9 @@ services:
     image: postgres:17-alpine
     container_name: keycloak-db-container
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak_db
+      POSTGRES_PASSWORD: keycloak_db
     ports:
       - "5433:5432"
     networks:
