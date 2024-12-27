@@ -49,13 +49,13 @@ public class AuthServiceImpl implements AuthService {
     @Value("${keycloak.login.token-url}")
     private String keycloakLoginUrl;
 
-    @Value("${keycloak.login.grant_type}")
+    @Value("${keycloak.login.grant-type}")
     private String keycloakLoginGrantType;
 
-    @Value("${keycloak.login.client_id}")
+    @Value("${keycloak.login.client-id}")
     private String keycloakLoginClientId;
 
-    @Value("${keycloak.login.client_secret}")
+    @Value("${keycloak.login.client-secret}")
     private String keycloakLoginClientSecret;
 
     @Override

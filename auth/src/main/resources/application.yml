@@ -42,9 +42,16 @@ spring:
 keycloak:
   login:
     token-url: "http://localhost:9098/realms/microbank/protocol/openid-connect/token"
-    grant_type: "password"
-    client_id: "admin-cli"
-    client_secret: "mBezikt415TzWgkYISs403iVtswP3HsI"
+    grant-type: "password"
+    client-id: "admin-cli"
+    client-secret: "mBezikt415TzWgkYISs403iVtswP3HsI"
+  config:
+    server-url: "http://localhost:9098"
+    realm: "master"
+    username: "admin"
+    password: "admin"
+    client-id: "admin-cli"
+    client-secret: "mBezikt415TzWgkYISs403iVtswP3HsI"
 
 eureka:
   client:
@@ -55,4 +62,4 @@ eureka:
 
 logging:
   level:
-    com.microbank.auth.service.impl.AuthServiceImpl: debug
+    com.microbank.auth: debug
