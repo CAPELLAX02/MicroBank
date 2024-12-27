@@ -1,22 +1,31 @@
 package com.microbank.auth.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microbank.auth.User;
 import com.microbank.auth.UserRepository;
+import com.microbank.auth.dto.request.ActivationRequest;
+import com.microbank.auth.dto.request.LoginRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.service.AuthService;
+import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -37,17 +46,17 @@ public class AuthServiceImpl implements AuthService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-//    @Value("${keycloak.login.token-url}")
-//    private String keycloakLoginUrl;
-//
-//    @Value("${keycloak.login.grant_type}")
-//    private String keycloakLoginGrantType;
-//
-//    @Value("${keycloak.login.client_id}")
-//    private String keycloakLoginClientId;
-//
-//    @Value("${keycloak.login.client_secret}")
-//    private String keycloakLoginClientSecret;
+    @Value("${keycloak.login.token-url}")
+    private String keycloakLoginUrl;
+
+    @Value("${keycloak.login.grant_type}")
+    private String keycloakLoginGrantType;
+
+    @Value("${keycloak.login.client_id}")
+    private String keycloakLoginClientId;
+
+    @Value("${keycloak.login.client_secret}")
+    private String keycloakLoginClientSecret;
 
     @Override
     public String registerUser(RegisterRequest request) {
@@ -95,6 +104,86 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String generateActivationCode() {
         return String.format("%06d", new Random().nextInt(999999));
+    }
+
+//    @Transactional
+    @Override
+    public String activateUser(ActivationRequest request) {
+        try {
+            String userDataJson = redisTemplate.opsForValue().get(request.email());
+            if (userDataJson == null) {
+                throw new RuntimeException("Activation code expired or invalid.");
+            }
+
+            Map<String, Object> userData = objectMapper.readValue(userDataJson, new TypeReference<>() {});
+            if (!request.activationCode().equals(userData.get("activationCode"))) {
+                throw new RuntimeException("Invalid activation code.");
+            }
+
+            UsersResource usersResource = keycloak.realm("microbank").users();
+            UserRepresentation user = new UserRepresentation();
+            user.setUsername((String) userData.get("username"));
+            user.setFirstName((String) userData.get("firstName"));
+            user.setLastName((String) userData.get("lastName"));
+            user.setEmail((String) userData.get("email"));
+            user.setEnabled(true);
+            user.setEmailVerified(true);
+
+            CredentialRepresentation credential = new CredentialRepresentation();
+            credential.setType(CredentialRepresentation.PASSWORD);
+            credential.setValue((String) userData.get("password"));
+            credential.setTemporary(false);
+            user.setCredentials(Collections.singletonList(credential));
+
+            Response response = usersResource.create(user);
+            if (response.getStatus() != 201) {
+                throw new RuntimeException("Failed to create user in Keycloak. Status: " + response.getStatus());
+            }
+
+            String locationHeader = response.getHeaderString("Location");
+            String keycloakId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
+
+            User dbUser = new User();
+            dbUser.setKeycloakId(keycloakId);
+            dbUser.setUsername(userData.get("username").toString());
+            dbUser.setFirstName((String) userData.get("firstName"));
+            dbUser.setLastName((String) userData.get("lastName"));
+            dbUser.setEmail((String) userData.get("email"));
+            dbUser.setPassword(passwordEncoder.encode((String) userData.get("password")));
+            dbUser.setActivated(true);
+
+            userRepository.save(dbUser);
+
+            redisTemplate.delete(request.email());
+
+            return "User activated and registered successfully.";
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error processing user data from Redis", e);
+        }
+    }
+
+    public Map<String, Object> loginUser(LoginRequest loginRequest) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+            requestBody.add("grant_type", keycloakLoginGrantType);
+            requestBody.add("client_id", keycloakLoginClientId);
+            requestBody.add("client_secret", keycloakLoginClientSecret);
+            requestBody.add("username", loginRequest.username());
+            requestBody.add("password", loginRequest.password());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            ResponseEntity<Map> response = restTemplate.exchange(keycloakLoginUrl, HttpMethod.POST, requestEntity, Map.class);
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Login failed: " + e.getMessage());
+        }
     }
 
 }
