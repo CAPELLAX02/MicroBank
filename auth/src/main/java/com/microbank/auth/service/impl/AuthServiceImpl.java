@@ -60,13 +60,13 @@ public class AuthServiceImpl implements AuthService {
         message.put("lastName", request.lastName());
         message.put("activationCode", activationCode);
 
-//        try {
-//            String jsonMessage = objectMapper.writeValueAsString(message);
-//            rabbitTemplate.convertAndSend("activation-queue", jsonMessage);
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("Failed to send message to RabbitMQ", e);
-//        }
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            rabbitTemplate.convertAndSend("activation-queue", jsonMessage);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send message to RabbitMQ", e);
+        }
 
         return "User registered successfully. Check your email for the activation code.";
     }

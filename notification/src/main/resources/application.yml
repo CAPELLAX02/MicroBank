@@ -24,7 +24,7 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
-sender-email: "no-reply@capellax.com"
+sender-email: "no-reply@microbank.co"
 
 eureka:
   client:
