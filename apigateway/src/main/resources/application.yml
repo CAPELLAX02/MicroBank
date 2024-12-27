@@ -17,10 +17,9 @@ spring:
 
       routes:
         - id: auth-service
-          uri: lb://auth-service
-          #          uri: http://user-serv:8081
+          uri: http://localhost:8081
           predicates:
-            - Path=/api/auth/**
+            - Path=/api/v1/auth/**
 
 eureka:
   client:
