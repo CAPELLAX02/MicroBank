@@ -3,7 +3,9 @@ package com.microbank.auth;
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
+import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +51,13 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/{userId}")
+    public UserResponse getUserById(
+            @Valid @PathVariable Long userId
+    ) {
+        return authService.getUserById(userId);
     }
 
 }

@@ -8,6 +8,7 @@ import com.microbank.auth.UserRepository;
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
+import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.service.AuthService;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
@@ -184,6 +185,20 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             throw new RuntimeException("Login failed: " + e.getMessage());
         }
+    }
+
+    @Override
+    public UserResponse getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new UserResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getUsername(),
+                user.getEmail()
+        );
     }
 
 }

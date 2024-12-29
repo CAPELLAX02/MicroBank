@@ -19,7 +19,9 @@ public class SecurityConfig {
                                 "/api/v1/auth/test",
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/activate",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/api/v1/account",
+                                "/api/v1/account/user/{userId}"
                         ).permitAll()
                         .anyExchange().authenticated()
                 )

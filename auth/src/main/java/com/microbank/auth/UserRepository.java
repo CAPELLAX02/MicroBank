@@ -1,5 +1,6 @@
 package com.microbank.auth;
 
+import com.microbank.auth.dto.response.UserResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

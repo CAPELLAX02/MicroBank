@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8084
 
 spring:
   application:
@@ -40,3 +40,4 @@ eureka:
 logging:
   level:
     com.microbank.account: debug
+    root: info
