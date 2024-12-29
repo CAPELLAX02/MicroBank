@@ -1,4 +1,4 @@
-package com.microbank.account;
+package com.microbank.account.model;
 
 import jakarta.persistence.*;
 
@@ -16,21 +16,21 @@ public class Account {
     private String IBAN;
 
     @Column(nullable = false)
-    private String ownerName;
+    private BigDecimal balance;
 
     @Column(nullable = false)
-    private BigDecimal balance;
+    private String ownerName;
 
     @Column(nullable = false)
     private Long userId;
 
     public Account() {}
 
-    public Account(Long id, String IBAN, String ownerName, BigDecimal balance, Long userId) {
+    public Account(Long id, String IBAN, BigDecimal balance, String ownerName, Long userId) {
         this.id = id;
         this.IBAN = IBAN;
-        this.ownerName = ownerName;
         this.balance = balance;
+        this.ownerName = ownerName;
         this.userId = userId;
     }
 
@@ -50,20 +50,20 @@ public class Account {
         this.IBAN = IBAN;
     }
 
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
-
     public BigDecimal getBalance() {
         return balance;
     }
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public Long getUserId() {
@@ -73,4 +73,5 @@ public class Account {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
 }

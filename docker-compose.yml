@@ -66,6 +66,18 @@ services:
     networks:
       - microbank-network
 
+  postgres-transaction-service:
+    image: postgres:17-alpine
+    container_name: transaction-db-container
+    environment:
+      POSTGRES_DB: transaction_db
+      POSTGRES_USER: transaction_db
+      POSTGRES_PASSWORD: transaction_db
+    ports:
+      - "5433:5432"
+    networks:
+      - microbank-network
+
   postgres-keycloak:
     image: postgres:17-alpine
     container_name: keycloak-db-container
@@ -74,7 +86,15 @@ services:
       POSTGRES_USER: keycloak_db
       POSTGRES_PASSWORD: keycloak_db
     ports:
-      - "5433:5432"
+      - "5434:5432"
     networks:
       - microbank-network
 
+  exchange-rate-service:
+    build:
+      context: ./exchange-api
+    container_name: exchange-rate-container
+    ports:
+      - "8000:80"
+    networks:
+      - microbank-network

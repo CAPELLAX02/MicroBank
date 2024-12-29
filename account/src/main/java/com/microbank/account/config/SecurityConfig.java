@@ -1,4 +1,4 @@
-package com.microbank.account;
+package com.microbank.account.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +17,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/v1/account").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/account/user/{userId}").permitAll()
+                        .requestMatchers("/api/v1/account/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();

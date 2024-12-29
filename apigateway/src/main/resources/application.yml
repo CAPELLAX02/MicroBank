@@ -26,6 +26,11 @@ spring:
           predicates:
             - Path=/api/v1/account/**
 
+        - id: transaction-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/v1/transaction/**
+
 eureka:
   client:
     service-url:

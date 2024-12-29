@@ -1,4 +1,4 @@
-package com.microbank.account;
+package com.microbank.account.dto.response;
 
 public record UserResponse(
         Long id,

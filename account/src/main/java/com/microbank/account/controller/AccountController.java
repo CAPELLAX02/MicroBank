@@ -1,5 +1,8 @@
-package com.microbank.account;
+package com.microbank.account.controller;
 
+import com.microbank.account.dto.request.CreateAccountRequest;
+import com.microbank.account.dto.request.UpdateBalanceRequest;
+import com.microbank.account.dto.response.AccountResponse;
 import com.microbank.account.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +33,21 @@ public class AccountController {
     ) {
         return ResponseEntity.ok(accountService.getAllAccountsByUserId(userId));
     }
+
+    @PutMapping("/balance")
+    public ResponseEntity<Void> updateBalance(
+            @RequestBody @Valid UpdateBalanceRequest request
+    ) {
+        accountService.updateBalance(request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{accountId}")
+    public ResponseEntity<AccountResponse> getAccountById(
+            @PathVariable Long accountId
+    ) {
+        return ResponseEntity.ok(accountService.getAccountById(accountId));
+    }
+
 
 }
