@@ -1,4 +1,4 @@
-package com.microbank.auth;
+package com.microbank.auth.config;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;

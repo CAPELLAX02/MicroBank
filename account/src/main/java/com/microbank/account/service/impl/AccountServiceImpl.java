@@ -12,6 +12,7 @@ import com.microbank.account.service.utils.IbanGenerator;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse createAccount(CreateAccountRequest request) {
-        UserResponse user = authServiceClient.getUserById(request.userId());
+    public AccountResponse createAccount(CreateAccountRequest request, String keycloakId) {
+        UserResponse user = authServiceClient.getUserByKeycloakId(keycloakId);
         if (user == null) {
             throw new RuntimeException("User not found in the auth service.");
         }
@@ -37,7 +38,8 @@ public class AccountServiceImpl implements AccountService {
         account.setIBAN(IbanGenerator.generateIBAN());
         account.setOwnerName(user.firstName() + " " + user.lastName());
         account.setBalance(request.initialBalance());
-        account.setUserId(request.userId());
+        account.setUserId(user.id());
+        account.setKeycloakId(keycloakId);
 
         account = accountRepository.save(account);
 

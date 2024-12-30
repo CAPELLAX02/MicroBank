@@ -16,4 +16,6 @@ public interface AuthService {
     Map<String, Object> loginUser(LoginRequest loginRequest);
     UserResponse getUserById(Long userId);
 
+    UserResponse getUserByKeycloakId(String keycloakId);
+
 }

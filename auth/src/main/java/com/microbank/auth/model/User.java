@@ -1,5 +1,6 @@
-package com.microbank.auth;
+package com.microbank.auth.model;
 
+import com.microbank.auth.model.enums.UserRole;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,10 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @Column(nullable = false)
     private String firstName;
@@ -34,10 +39,11 @@ public class User {
     @Column
     private String activationCode;
 
-    public User(Long id, String keycloakId, String username, String firstName, String lastName, String email, String password, boolean activated, String activationCode) {
+    public User(Long id, String keycloakId, String username, UserRole role, String firstName, String lastName, String email, String password, boolean activated, String activationCode) {
         this.id = id;
         this.keycloakId = keycloakId;
         this.username = username;
+        this.role = role;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -70,6 +76,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public String getFirstName() {

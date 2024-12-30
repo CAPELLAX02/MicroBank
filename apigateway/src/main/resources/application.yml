@@ -31,6 +31,14 @@ spring:
           predicates:
             - Path=/api/v1/transaction/**
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9098/realms/microbank
+          jwk-set-uri: http://localhost:9098/realms/microbank/protocol/openid-connect/certs
+
+
 eureka:
   client:
     service-url:

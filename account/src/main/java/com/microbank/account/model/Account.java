@@ -24,14 +24,18 @@ public class Account {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
+    private String keycloakId;
+
     public Account() {}
 
-    public Account(Long id, String IBAN, BigDecimal balance, String ownerName, Long userId) {
+    public Account(Long id, String IBAN, BigDecimal balance, String ownerName, Long userId, String keycloakId) {
         this.id = id;
         this.IBAN = IBAN;
         this.balance = balance;
         this.ownerName = ownerName;
         this.userId = userId;
+        this.keycloakId = keycloakId;
     }
 
     public Long getId() {
@@ -72,6 +76,14 @@ public class Account {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
     }
 
 }

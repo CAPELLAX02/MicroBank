@@ -1,4 +1,4 @@
-package com.microbank.auth;
+package com.microbank.auth.controller;
 
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
@@ -22,6 +22,13 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @GetMapping("/keycloak/{keycloakId}")
+    public ResponseEntity<UserResponse> getUserByKeycloakId(
+            @PathVariable String keycloakId
+    ) {
+        return ResponseEntity.ok(authService.getUserByKeycloakId(keycloakId));
     }
 
     @PostMapping("/register")

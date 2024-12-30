@@ -6,8 +6,11 @@ import com.microbank.account.dto.response.AccountResponse;
 import com.microbank.account.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -22,9 +25,11 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<AccountResponse> createAccount(
-            @RequestBody @Valid CreateAccountRequest request
+            @RequestBody @Valid CreateAccountRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return ResponseEntity.ok(accountService.createAccount(request));
+        String keycloakUserId = jwt.getClaimAsString("sub");
+        return ResponseEntity.ok(accountService.createAccount(request, keycloakUserId));
     }
 
     @GetMapping("/user/{userId}")

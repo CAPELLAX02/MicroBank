@@ -1,4 +1,4 @@
-package com.microbank.auth;
+package com.microbank.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +23,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,  "/api/v1/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST,  "/api/v1/auth/activate").permitAll()
                         .requestMatchers(HttpMethod.POST,  "/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,   "/api/v1/auth/{userId}").permitAll()
+
+                        .requestMatchers("/api/v1/auth/keycloak/**").authenticated()
                         .anyRequest().authenticated()
                 )
-//                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .build();
     }
 

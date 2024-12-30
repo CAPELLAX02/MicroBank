@@ -3,17 +3,19 @@ package com.microbank.auth.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microbank.auth.User;
-import com.microbank.auth.UserRepository;
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
+import com.microbank.auth.model.User;
+import com.microbank.auth.model.enums.UserRole;
+import com.microbank.auth.repository.UserRepository;
 import com.microbank.auth.service.AuthService;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,7 +109,6 @@ public class AuthServiceImpl implements AuthService {
         return String.format("%06d", new Random().nextInt(999999));
     }
 
-//    @Transactional
     @Override
     public String activateUser(ActivationRequest request) {
         try {
@@ -144,6 +145,13 @@ public class AuthServiceImpl implements AuthService {
             String locationHeader = response.getHeaderString("Location");
             String keycloakId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
 
+            RoleRepresentation userRole = keycloak.realm("microbank")
+                    .roles()
+                    .get("USER")
+                    .toRepresentation();
+
+            usersResource.get(keycloakId).roles().realmLevel().add(Collections.singletonList(userRole));
+
             User dbUser = new User();
             dbUser.setKeycloakId(keycloakId);
             dbUser.setUsername(userData.get("username").toString());
@@ -152,6 +160,8 @@ public class AuthServiceImpl implements AuthService {
             dbUser.setEmail((String) userData.get("email"));
             dbUser.setPassword(passwordEncoder.encode((String) userData.get("password")));
             dbUser.setActivated(true);
+            dbUser.setRole(UserRole.USER);
+            dbUser.setActivationCode(null);
 
             userRepository.save(dbUser);
 
@@ -163,6 +173,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Error processing user data from Redis", e);
         }
     }
+
+
 
     public Map<String, Object> loginUser(LoginRequest loginRequest) {
         try {
@@ -194,9 +206,25 @@ public class AuthServiceImpl implements AuthService {
 
         return new UserResponse(
                 user.getId(),
+                user.getKeycloakId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getUsername(),
+                user.getEmail()
+        );
+    }
+
+    @Override
+    public UserResponse getUserByKeycloakId(String keycloakId) {
+        User user = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new RuntimeException("User not found with Keycloak ID: " + keycloakId));
+
+        return new UserResponse(
+                user.getId(),
+                user.getKeycloakId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getEmail()
         );
     }
