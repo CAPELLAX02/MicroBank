@@ -26,11 +26,11 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.createTransaction(request));
     }
 
-    @GetMapping("/account/{accountId}")
-    public ResponseEntity<List<TransactionResponse>> getTransactionsByAccountId(
-            @PathVariable Long accountId
+    @GetMapping("/account/{IBAN}")
+    public ResponseEntity<List<TransactionResponse>> getTransactionsByAccountIBAN(
+            @PathVariable String IBAN
     ) {
-        return ResponseEntity.ok(transactionService.getTransactionsByAccountId(accountId));
+        return ResponseEntity.ok(transactionService.getTransactionsByAccountIBAN(IBAN));
     }
 
 }

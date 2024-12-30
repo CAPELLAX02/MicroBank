@@ -8,6 +8,6 @@ import java.util.List;
 public interface TransactionService {
 
     TransactionResponse createTransaction(CreateTransactionRequest transaction);
-    List<TransactionResponse> getTransactionsByAccountId(Long accountId);
+    List<TransactionResponse> getTransactionsByAccountIBAN(String sourceAccountIBAN);
 
 }

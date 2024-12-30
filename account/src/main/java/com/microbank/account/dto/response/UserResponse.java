@@ -1,7 +1,10 @@
 package com.microbank.account.dto.response;
 
+import java.util.UUID;
+
 public record UserResponse(
-        Long id,
+        UUID id,
+        String keycloakId,
         String firstName,
         String lastName,
         String username,

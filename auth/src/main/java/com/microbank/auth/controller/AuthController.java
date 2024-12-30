@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -62,7 +63,7 @@ public class AuthController {
 
     @GetMapping("/{userId}")
     public UserResponse getUserById(
-            @Valid @PathVariable Long userId
+            @Valid @PathVariable UUID userId
     ) {
         return authService.getUserById(userId);
     }

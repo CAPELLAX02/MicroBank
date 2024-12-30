@@ -1,4 +1,4 @@
-package com.microbank.account.config;
+package com.microbank.transaction.config;
 
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;

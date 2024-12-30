@@ -200,7 +200,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserResponse getUserById(Long userId) {
+    public UserResponse getUserById(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

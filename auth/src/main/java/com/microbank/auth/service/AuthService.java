@@ -6,6 +6,7 @@ import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
 
 import java.util.Map;
+import java.util.UUID;
 
 public interface AuthService {
 
@@ -14,7 +15,7 @@ public interface AuthService {
     String generateActivationCode();
     String activateUser(ActivationRequest request);
     Map<String, Object> loginUser(LoginRequest loginRequest);
-    UserResponse getUserById(Long userId);
+    UserResponse getUserById(UUID userId);
 
     UserResponse getUserByKeycloakId(String keycloakId);
 

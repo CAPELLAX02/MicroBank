@@ -3,13 +3,15 @@ package com.microbank.auth.model;
 import com.microbank.auth.model.enums.UserRole;
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String keycloakId;
@@ -39,7 +41,7 @@ public class User {
     @Column
     private String activationCode;
 
-    public User(Long id, String keycloakId, String username, UserRole role, String firstName, String lastName, String email, String password, boolean activated, String activationCode) {
+    public User(UUID id, String keycloakId, String username, UserRole role, String firstName, String lastName, String email, String password, boolean activated, String activationCode) {
         this.id = id;
         this.keycloakId = keycloakId;
         this.username = username;
@@ -54,11 +56,11 @@ public class User {
 
     public User() {}
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

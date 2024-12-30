@@ -12,7 +12,7 @@ import com.microbank.account.service.utils.IbanGenerator;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,6 @@ public class AccountServiceImpl implements AccountService {
         account = accountRepository.save(account);
 
         return new AccountResponse(
-                account.getId(),
                 account.getIBAN(),
                 account.getOwnerName(),
                 account.getBalance(),
@@ -53,14 +52,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponse> getAllAccountsByUserId(Long userId) {
-        if (!accountRepository.existsById(userId)) {
-            throw new RuntimeException("User not found");
+    public List<AccountResponse> getAllAccountsByKeycloakId(String keycloakId) {
+        if (!accountRepository.existsAccountByKeycloakId(keycloakId)) {
+            return Collections.emptyList();
         }
-        return accountRepository.findAllByUserId(userId)
+        return accountRepository.findAllByKeycloakId(keycloakId)
                 .stream()
                 .map(account -> new AccountResponse(
-                        account.getId(),
                         account.getIBAN(),
                         account.getOwnerName(),
                         account.getBalance(),
@@ -71,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void updateBalance(UpdateBalanceRequest request) {
-        Account account = accountRepository.findById(request.accountId())
+        Account account = accountRepository.findByIBAN(request.accountIBAN())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         BigDecimal newBalance = request.isDeposit()
@@ -87,12 +85,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse getAccountById(Long accountId) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+    public AccountResponse getAccountByIBAN(String IBAN) {
+        Account account = accountRepository.findByIBAN(IBAN)
+                .orElseThrow(() -> new RuntimeException("Account not found with IBAN: " + IBAN));
 
         return new AccountResponse(
-                account.getId(),
                 account.getIBAN(),
                 account.getOwnerName(),
                 account.getBalance(),

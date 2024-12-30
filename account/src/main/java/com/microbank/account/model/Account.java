@@ -3,14 +3,15 @@ package com.microbank.account.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "accounts")
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String IBAN;
@@ -22,14 +23,14 @@ public class Account {
     private String ownerName;
 
     @Column(nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @Column(nullable = false)
     private String keycloakId;
 
     public Account() {}
 
-    public Account(Long id, String IBAN, BigDecimal balance, String ownerName, Long userId, String keycloakId) {
+    public Account(UUID id, String IBAN, BigDecimal balance, String ownerName, UUID userId, String keycloakId) {
         this.id = id;
         this.IBAN = IBAN;
         this.balance = balance;
@@ -38,11 +39,11 @@ public class Account {
         this.keycloakId = keycloakId;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -70,11 +71,11 @@ public class Account {
         this.ownerName = ownerName;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

@@ -13,10 +13,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate.format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9098/realms/microbank
+          jwk-set-uri: http://localhost:9098/realms/microbank/protocol/openid-connect/certs
 
 eureka:
   client:

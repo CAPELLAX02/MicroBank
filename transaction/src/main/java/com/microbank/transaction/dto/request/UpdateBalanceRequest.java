@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public record UpdateBalanceRequest(
 
         @NotNull
-        Long accountId,
+        String accountIBAN,
 
         @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
         BigDecimal amount,

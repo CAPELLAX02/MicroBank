@@ -26,28 +26,28 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionResponse createTransaction(CreateTransactionRequest request) {
-        accountServiceClient.getAccountByAccountId(request.sourceAccountId());
-        accountServiceClient.getAccountByAccountId(request.targetAccountId());
+        accountServiceClient.getAccountByIBAN(request.sourceAccountIBAN());
+        accountServiceClient.getAccountByIBAN(request.targetAccountIBAN());
 
         accountServiceClient.updateBalance(
-                new UpdateBalanceRequest(request.sourceAccountId(), request.amount(), false)
+                new UpdateBalanceRequest(request.sourceAccountIBAN(), request.amount(), false)
         );
 
         accountServiceClient.updateBalance(
-                new UpdateBalanceRequest(request.targetAccountId(), request.amount(), true)
+                new UpdateBalanceRequest(request.targetAccountIBAN(), request.amount(), true)
         );
 
         Transaction sourceTransaction = new Transaction();
-        sourceTransaction.setSourceAccountId(request.sourceAccountId());
-        sourceTransaction.setTargetAccountId(request.targetAccountId());
+        sourceTransaction.setSourceAccountIBAN(request.sourceAccountIBAN());
+        sourceTransaction.setTargetAccountIBAN(request.targetAccountIBAN());
         sourceTransaction.setAmount(request.amount());
         sourceTransaction.setTimestamp(LocalDateTime.now());
         sourceTransaction.setType("TRANSFER");
         transactionRepository.save(sourceTransaction);
 
         Transaction targetTransaction = new Transaction();
-        targetTransaction.setSourceAccountId(request.targetAccountId());
-        targetTransaction.setTargetAccountId(request.sourceAccountId());
+        targetTransaction.setSourceAccountIBAN(request.targetAccountIBAN());
+        targetTransaction.setTargetAccountIBAN(request.sourceAccountIBAN());
         targetTransaction.setAmount(request.amount());
         targetTransaction.setTimestamp(LocalDateTime.now());
         targetTransaction.setType("RECEIVED");
@@ -55,8 +55,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new TransactionResponse(
                 sourceTransaction.getId(),
-                sourceTransaction.getSourceAccountId(),
-                sourceTransaction.getTargetAccountId(),
+                sourceTransaction.getSourceAccountIBAN(),
+                sourceTransaction.getTargetAccountIBAN(),
                 sourceTransaction.getAmount(),
                 sourceTransaction.getTimestamp(),
                 sourceTransaction.getType()
@@ -64,21 +64,21 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> getTransactionsByAccountId(Long accountId) {
-        var account = accountServiceClient.getAccountByAccountId(accountId);
+    public List<TransactionResponse> getTransactionsByAccountIBAN(String IBAN) {
+        var account = accountServiceClient.getAccountByIBAN(IBAN);
 
         if (account == null) {
             throw new RuntimeException("Account not found");
         }
 
-        List<Transaction> transactions = transactionRepository.findAllBySourceAccountId(accountId)
-                .orElseThrow(() -> new RuntimeException("No transactions found for account id: " + accountId));
+        List<Transaction> transactions = transactionRepository.findAllBySourceAccountIBAN(IBAN)
+                .orElseThrow(() -> new RuntimeException("No transactions found for account IBAN: " + IBAN));
 
         return transactions.stream()
                 .map(transaction -> new TransactionResponse(
                         transaction.getId(),
-                        transaction.getSourceAccountId(),
-                        transaction.getTargetAccountId(),
+                        transaction.getSourceAccountIBAN(),
+                        transaction.getTargetAccountIBAN(),
                         transaction.getAmount(),
                         transaction.getTimestamp(),
                         transaction.getType()

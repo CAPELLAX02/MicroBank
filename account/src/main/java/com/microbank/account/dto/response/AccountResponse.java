@@ -1,12 +1,12 @@
 package com.microbank.account.dto.response;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record AccountResponse(
-        Long id,
         String IBAN,
         String ownerName,
         BigDecimal balance,
-        Long userId
+        UUID userId
 ) {
 }

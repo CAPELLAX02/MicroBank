@@ -10,7 +10,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -32,11 +31,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.createAccount(request, keycloakUserId));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AccountResponse>> getAccountsByUserId(
-            @PathVariable Long userId
+    @GetMapping
+    public ResponseEntity<List<AccountResponse>> getMyAccounts(
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return ResponseEntity.ok(accountService.getAllAccountsByUserId(userId));
+        String keycloakUserId = jwt.getClaimAsString("sub");
+        return ResponseEntity.ok(accountService.getAllAccountsByKeycloakId(keycloakUserId));
     }
 
     @PutMapping("/balance")
@@ -47,12 +47,11 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{accountId}")
-    public ResponseEntity<AccountResponse> getAccountById(
-            @PathVariable Long accountId
+    @GetMapping("/{IBAN}")
+    public ResponseEntity<AccountResponse> getAccountByIBAN(
+            @PathVariable String IBAN
     ) {
-        return ResponseEntity.ok(accountService.getAccountById(accountId));
+        return ResponseEntity.ok(accountService.getAccountByIBAN(IBAN));
     }
-
 
 }

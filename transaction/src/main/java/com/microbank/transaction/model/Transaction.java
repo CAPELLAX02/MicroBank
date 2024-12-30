@@ -4,21 +4,22 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "transactions")
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, updatable = false)
-    private Long id;
+    private UUID id;
 
-    @Column(nullable = false)
-    private Long sourceAccountId;
+    @Column(name= "source_account_iban", nullable = false)
+    private String sourceAccountIBAN;
 
-    @Column(nullable = false)
-    private Long targetAccountId;
+    @Column(name= "target_account_iban", nullable = false)
+    private String targetAccountIBAN;
 
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
@@ -31,36 +32,36 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(Long sourceAccountId, Long targetAccountId, BigDecimal amount, LocalDateTime timestamp, String type) {
-        this.sourceAccountId = sourceAccountId;
-        this.targetAccountId = targetAccountId;
+    public Transaction(String sourceAccountIBAN, String targetAccountIBAN, BigDecimal amount, LocalDateTime timestamp, String type) {
+        this.sourceAccountIBAN = sourceAccountIBAN;
+        this.targetAccountIBAN = targetAccountIBAN;
         this.amount = amount;
         this.timestamp = timestamp;
         this.type = type;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public Long getSourceAccountId() {
-        return sourceAccountId;
+    public String getSourceAccountIBAN() {
+        return sourceAccountIBAN;
     }
 
-    public void setSourceAccountId(Long sourceAccountId) {
-        this.sourceAccountId = sourceAccountId;
+    public void setSourceAccountIBAN(String sourceAccountIBAN) {
+        this.sourceAccountIBAN = sourceAccountIBAN;
     }
 
-    public Long getTargetAccountId() {
-        return targetAccountId;
+    public String getTargetAccountIBAN() {
+        return targetAccountIBAN;
     }
 
-    public void setTargetAccountId(Long targetAccountId) {
-        this.targetAccountId = targetAccountId;
+    public void setTargetAccountIBAN(String targetAccountIBAN) {
+        this.targetAccountIBAN = targetAccountIBAN;
     }
 
     public BigDecimal getAmount() {
