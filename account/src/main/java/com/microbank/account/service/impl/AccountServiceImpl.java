@@ -47,7 +47,8 @@ public class AccountServiceImpl implements AccountService {
                 account.getIBAN(),
                 account.getOwnerName(),
                 account.getBalance(),
-                account.getUserId()
+                account.getUserId(),
+                null
         );
     }
 
@@ -56,13 +57,15 @@ public class AccountServiceImpl implements AccountService {
         if (!accountRepository.existsAccountByKeycloakId(keycloakId)) {
             return Collections.emptyList();
         }
+
         return accountRepository.findAllByKeycloakId(keycloakId)
                 .stream()
                 .map(account -> new AccountResponse(
                         account.getIBAN(),
                         account.getOwnerName(),
                         account.getBalance(),
-                        account.getUserId()
+                        account.getUserId(),
+                        null
                 ))
                 .collect(Collectors.toList());
     }
@@ -89,11 +92,14 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByIBAN(IBAN)
                 .orElseThrow(() -> new RuntimeException("Account not found with IBAN: " + IBAN));
 
+        String email = authServiceClient.getUserById(account.getUserId()).email();
+
         return new AccountResponse(
                 account.getIBAN(),
                 account.getOwnerName(),
                 account.getBalance(),
-                account.getUserId()
+                account.getUserId(),
+                email
         );
     }
 

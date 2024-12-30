@@ -1,4 +1,4 @@
-package com.microbank.notification;
+package com.microbank.notification.listeners;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

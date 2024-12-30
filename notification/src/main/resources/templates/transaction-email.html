@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .details {
+            margin: 20px 0;
+        }
+        .details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .details th, .details td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .details th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">Transaction Notification</div>
+    <div class="content">
+        <p>Dear User,</p>
+        <p>A transaction has occurred with the following details:</p>
+        <div class="details">
+            <table>
+                <tr>
+                    <th>Sender Name</th>
+                    <td th:text="${sourceName}"></td>
+                </tr>
+                <tr>
+                    <th>Sender IBAN</th>
+                    <td th:text="${sourceIBAN}"></td>
+                </tr>
+                <tr>
+                    <th>Recipient Name</th>
+                    <td th:text="${targetName}"></td>
+                </tr>
+                <tr>
+                    <th>Recipient IBAN</th>
+                    <td th:text="${targetIBAN}"></td>
+                </tr>
+                <tr>
+                    <th>Amount</th>
+                    <td th:text="${amount} + ' USD'"></td>
+                </tr>
+                <tr>
+                    <th>Timestamp</th>
+                    <td th:text="${timestamp}"></td>
+                </tr>
+            </table>
+        </div>
+        <p>Thank you,<br>MicroBank Notification Team</p>
+    </div>
+    <div class="footer">
+        &copy; 2024 MicroBank. All rights reserved.
+    </div>
+</div>
+</body>
+</html>

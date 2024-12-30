@@ -1,5 +1,6 @@
 package com.microbank.transaction.service.impl;
 
+import com.microbank.transaction.dto.event.TransactionEvent;
 import com.microbank.transaction.dto.request.CreateTransactionRequest;
 import com.microbank.transaction.dto.request.UpdateBalanceRequest;
 import com.microbank.transaction.dto.response.TransactionResponse;
@@ -7,6 +8,9 @@ import com.microbank.transaction.feign.AccountServiceClient;
 import com.microbank.transaction.model.Transaction;
 import com.microbank.transaction.repository.TransactionRepository;
 import com.microbank.transaction.service.TransactionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,16 +22,22 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountServiceClient accountServiceClient;
+    private final RabbitTemplate rabbitTemplate;
+    private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountServiceClient accountServiceClient) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountServiceClient accountServiceClient, RabbitTemplate rabbitTemplate) {
         this.transactionRepository = transactionRepository;
         this.accountServiceClient = accountServiceClient;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
     public TransactionResponse createTransaction(CreateTransactionRequest request) {
-        accountServiceClient.getAccountByIBAN(request.sourceAccountIBAN());
-        accountServiceClient.getAccountByIBAN(request.targetAccountIBAN());
+        var sourceAccount = accountServiceClient.getAccountByIBAN(request.sourceAccountIBAN());
+        var targetAccount = accountServiceClient.getAccountByIBAN(request.targetAccountIBAN());
+
+        logger.info("Source Account Response: {}", sourceAccount);
+        logger.info("Target Account Response: {}", targetAccount);
 
         accountServiceClient.updateBalance(
                 new UpdateBalanceRequest(request.sourceAccountIBAN(), request.amount(), false)
@@ -52,6 +62,21 @@ public class TransactionServiceImpl implements TransactionService {
         targetTransaction.setTimestamp(LocalDateTime.now());
         targetTransaction.setType("RECEIVED");
         transactionRepository.save(targetTransaction);
+
+        TransactionEvent transactionEvent = new TransactionEvent(
+                sourceTransaction.getSourceAccountIBAN(),
+                sourceTransaction.getTargetAccountIBAN(),
+                sourceAccount.email(),
+                targetAccount.email(),
+                sourceAccount.ownerName(),
+                targetAccount.ownerName(),
+                sourceTransaction.getAmount(),
+                sourceTransaction.getTimestamp()
+        );
+
+        logger.info("Transaction Event: {}", transactionEvent);
+
+        rabbitTemplate.convertAndSend("transaction-queue", transactionEvent);
 
         return new TransactionResponse(
                 sourceTransaction.getId(),

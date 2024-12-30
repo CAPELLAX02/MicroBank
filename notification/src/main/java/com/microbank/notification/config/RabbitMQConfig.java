@@ -1,4 +1,4 @@
-package com.microbank.notification;
+package com.microbank.notification.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
@@ -8,8 +8,13 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     @Bean
-    public Queue notificationQueue() {
+    public Queue activationQueue() {
         return new Queue("activation-queue", true);
+    }
+
+    @Bean
+    public Queue transactionQueue() {
+        return new Queue("transaction-queue", true);
     }
 
 }

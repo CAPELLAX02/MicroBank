@@ -8,6 +8,7 @@ public record AccountResponse(
         String IBAN,
         String ownerName,
         BigDecimal balance,
-        UUID userId
+        UUID userId,
+        String email
 ) {
 }
