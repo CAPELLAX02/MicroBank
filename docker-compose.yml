@@ -78,6 +78,18 @@ services:
     networks:
       - microbank-network
 
+  postgres-document-service:
+    image: postgres:17-alpine
+    container_name: document-db-container
+    environment:
+      POSTGRES_DB: document_db
+      POSTGRES_USER: document_db
+      POSTGRES_PASSWORD: document_db
+    ports:
+      - "5434:5432"
+    networks:
+      - microbank-network
+
   postgres-keycloak:
     image: postgres:17-alpine
     container_name: keycloak-db-container
@@ -86,15 +98,24 @@ services:
       POSTGRES_USER: keycloak_db
       POSTGRES_PASSWORD: keycloak_db
     ports:
-      - "5434:5432"
+      - "5435:5432"
     networks:
       - microbank-network
 
-  exchange-rate-service:
-    build:
-      context: ./exchange-api
-    container_name: exchange-rate-container
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: "capellax" # Change this to a secure username
+      MINIO_ROOT_PASSWORD: "12345678" # Change this to a secure password
     ports:
-      - "8000:80"
+      - "9000:9000" # MinIO Web UI and API
+      - "9001:9001" # MinIO Console (optional)
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
     networks:
       - microbank-network
+
+volumes:
+  minio-data:
