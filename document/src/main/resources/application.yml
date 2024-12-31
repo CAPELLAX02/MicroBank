@@ -1,0 +1,44 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: document-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5434/document_db
+    username: document_db
+    password: document_db
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+
+  cloud:
+    discovery:
+      enabled: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9098/realms/microbank
+          jwk-set-uri: http://localhost:9098/realms/microbank/protocol/openid-connect/certs
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: capellax
+  secret-key: 12345678
+  bucket-name: documents
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

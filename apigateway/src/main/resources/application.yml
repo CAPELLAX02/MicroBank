@@ -31,6 +31,11 @@ spring:
           predicates:
             - Path=/api/v1/transaction/**
 
+        - id: document-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/v1/documents/**
+
   security:
     oauth2:
       resourceserver:

@@ -3,6 +3,7 @@ package com.microbank.transaction.service.impl;
 import com.microbank.transaction.dto.event.TransactionEvent;
 import com.microbank.transaction.dto.request.CreateTransactionRequest;
 import com.microbank.transaction.dto.request.UpdateBalanceRequest;
+import com.microbank.transaction.dto.response.TransactionDetailsResponse;
 import com.microbank.transaction.dto.response.TransactionResponse;
 import com.microbank.transaction.feign.AccountServiceClient;
 import com.microbank.transaction.feign.AuthServiceClient;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,6 +142,25 @@ public class TransactionServiceImpl implements TransactionService {
                         transaction.getType()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public TransactionDetailsResponse getTransactionDetailsById(String transactionId) {
+        Transaction transaction = transactionRepository.findById(UUID.fromString(transactionId))
+                .orElseThrow(() -> new RuntimeException("No transaction found for transaction ID: " + transactionId));
+
+        var sourceAccount = accountServiceClient.getAccountByIBAN(transaction.getSourceAccountIBAN());
+        var targetAccount = accountServiceClient.getAccountByIBAN(transaction.getTargetAccountIBAN());
+
+        return new TransactionDetailsResponse(
+                transaction.getId().toString(),
+                transaction.getSourceAccountIBAN(),
+                transaction.getTargetAccountIBAN(),
+                sourceAccount.ownerName(),
+                targetAccount.ownerName(),
+                transaction.getAmount(),
+                transaction.getTimestamp()
+        );
     }
 
 }

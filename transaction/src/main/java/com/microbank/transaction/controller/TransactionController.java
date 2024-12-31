@@ -1,6 +1,7 @@
 package com.microbank.transaction.controller;
 
 import com.microbank.transaction.dto.request.CreateTransactionRequest;
+import com.microbank.transaction.dto.response.TransactionDetailsResponse;
 import com.microbank.transaction.dto.response.TransactionResponse;
 import com.microbank.transaction.service.TransactionService;
 import jakarta.validation.Valid;
@@ -44,6 +45,14 @@ public class TransactionController {
         String keycloakId = jwt.getClaimAsString("sub");
         List<TransactionResponse> transactions = transactionService.getMyAllTransactions(keycloakId);
         return ResponseEntity.ok(transactions);
+    }
+
+    @GetMapping("/details/{transactionId}")
+    public ResponseEntity<TransactionDetailsResponse> getTransactionDetails(
+            @PathVariable String transactionId
+    ) {
+        TransactionDetailsResponse details = transactionService.getTransactionDetailsById(transactionId);
+        return ResponseEntity.ok(details);
     }
 
 }

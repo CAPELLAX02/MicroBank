@@ -44,14 +44,14 @@ keycloak:
     token-url: "http://localhost:9098/realms/microbank/protocol/openid-connect/token"
     grant-type: "password"
     client-id: "microbank-client"
-    client-secret: "AFI54pzJfiglQRLxHiiVTwkRLY2HjFwC"
+    client-secret: "9f5v583jKRdzpQ0eLdj8ge1FSmqowZHQ"
   config:
     server-url: "http://localhost:9098"
     realm: "master"
     username: "admin"
     password: "admin"
     client-id: "admin-cli"
-    client-secret: "PLYAVmf76HGZhf9wbY3tgz3slQHHZkah"
+    client-secret: "KJiIqL6IlUuxxvXvu3uWYpXboImq152e"
 
 eureka:
   client:
