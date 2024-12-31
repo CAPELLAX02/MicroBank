@@ -13,5 +13,7 @@ public interface AccountService {
     AccountResponse getAccountByIBAN(String IBAN);
 
     List<AccountResponse> getAllAccountsByKeycloakId(String keycloakId);
+    List<String> getIbansByKeycloakId(String keycloakId);
+
 
 }

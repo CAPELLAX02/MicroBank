@@ -8,6 +8,7 @@ import java.util.List;
 public interface TransactionService {
 
     TransactionResponse createTransaction(CreateTransactionRequest transaction);
-    List<TransactionResponse> getTransactionsByAccountIBAN(String sourceAccountIBAN);
+    List<TransactionResponse> getMyTransactionsByAccountIBAN(String sourceAccountIBAN, String keycloakId);
+    List<TransactionResponse> getMyAllTransactions(String keycloakId);
 
 }

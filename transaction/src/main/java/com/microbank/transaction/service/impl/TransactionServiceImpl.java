@@ -5,6 +5,7 @@ import com.microbank.transaction.dto.request.CreateTransactionRequest;
 import com.microbank.transaction.dto.request.UpdateBalanceRequest;
 import com.microbank.transaction.dto.response.TransactionResponse;
 import com.microbank.transaction.feign.AccountServiceClient;
+import com.microbank.transaction.feign.AuthServiceClient;
 import com.microbank.transaction.model.Transaction;
 import com.microbank.transaction.repository.TransactionRepository;
 import com.microbank.transaction.service.TransactionService;
@@ -22,13 +23,15 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountServiceClient accountServiceClient;
+    private final AuthServiceClient authServiceClient;
     private final RabbitTemplate rabbitTemplate;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountServiceClient accountServiceClient, RabbitTemplate rabbitTemplate) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountServiceClient accountServiceClient, RabbitTemplate rabbitTemplate, AuthServiceClient authServiceClient) {
         this.transactionRepository = transactionRepository;
         this.accountServiceClient = accountServiceClient;
         this.rabbitTemplate = rabbitTemplate;
+        this.authServiceClient = authServiceClient;
     }
 
     @Override
@@ -89,15 +92,43 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionResponse> getTransactionsByAccountIBAN(String IBAN) {
+    public List<TransactionResponse> getMyTransactionsByAccountIBAN(String IBAN, String keycloakId) {
         var account = accountServiceClient.getAccountByIBAN(IBAN);
 
         if (account == null) {
             throw new RuntimeException("Account not found");
         }
 
+        var user = authServiceClient.getUserById(account.userId());
+        if (!user.keycloakId().equals(keycloakId)) {
+            throw new RuntimeException("Access denied: This account does not belong to the authenticated user.");
+        }
+
         List<Transaction> transactions = transactionRepository.findAllBySourceAccountIBAN(IBAN)
                 .orElseThrow(() -> new RuntimeException("No transactions found for account IBAN: " + IBAN));
+
+        return transactions.stream()
+                .map(transaction -> new TransactionResponse(
+                        transaction.getId(),
+                        transaction.getSourceAccountIBAN(),
+                        transaction.getTargetAccountIBAN(),
+                        transaction.getAmount(),
+                        transaction.getTimestamp(),
+                        transaction.getType()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<TransactionResponse> getMyAllTransactions(String keycloakId) {
+        List<String> userIbans = accountServiceClient.getIbansByKeycloakId(keycloakId);
+
+        if (userIbans.isEmpty()) {
+            throw new RuntimeException("No accounts found for the user.");
+        }
+
+        List<Transaction> transactions = transactionRepository.findAllBySourceAccountIBANIn(userIbans);
 
         return transactions.stream()
                 .map(transaction -> new TransactionResponse(

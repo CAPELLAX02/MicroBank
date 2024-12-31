@@ -54,4 +54,11 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getAccountByIBAN(IBAN));
     }
 
+    @GetMapping("/keycloak/{keycloakId}/ibans")
+    public ResponseEntity<List<String>> getIbansByKeycloakId(@PathVariable String keycloakId) {
+        List<String> IBANs = accountService.getIbansByKeycloakId(keycloakId);
+        return ResponseEntity.ok(IBANs);
+    }
+
+
 }

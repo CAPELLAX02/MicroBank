@@ -106,4 +106,14 @@ public class AccountServiceImpl implements AccountService {
         );
     }
 
+    @Override
+    public List<String> getIbansByKeycloakId(String keycloakId) {
+        List<Account> accounts = accountRepository.findAllByKeycloakId(keycloakId);
+        return accounts.stream()
+                .map(Account::getIBAN)
+                .collect(Collectors.toList());
+    }
+
+
+
 }
