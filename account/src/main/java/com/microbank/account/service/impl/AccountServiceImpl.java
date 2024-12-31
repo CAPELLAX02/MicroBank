@@ -9,6 +9,8 @@ import com.microbank.account.model.Account;
 import com.microbank.account.repository.AccountRepository;
 import com.microbank.account.service.AccountService;
 import com.microbank.account.service.utils.IbanGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class AccountServiceImpl implements AccountService {
 
+    private static final Logger log = LoggerFactory.getLogger(AccountServiceImpl.class);
     private final AccountRepository accountRepository;
     private final AuthServiceClient authServiceClient;
 
@@ -36,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = new Account();
         account.setIBAN(IbanGenerator.generateIBAN());
-        account.setOwnerName(user.firstName() + " " + user.lastName());
+        account.setOwnerName((user.firstName().trim() + " " + user.lastName().trim()).toUpperCase());
         account.setBalance(request.initialBalance());
         account.setUserId(user.id());
         account.setKeycloakId(keycloakId);
