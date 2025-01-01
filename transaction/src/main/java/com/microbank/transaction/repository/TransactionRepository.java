@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     Optional<List<Transaction>> findAllBySourceAccountIBAN(String IBAN);
-
     List<Transaction> findAllBySourceAccountIBANIn(List<String> ibans);
+
 }

@@ -31,7 +31,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         ByteArrayInputStream pdfStream = PDFGenerator.generateTransactionDocument(transactionDetails);
 
-        String fileName = "transaction-" + transactionId + ".pdf";
+        String fileName = "TRANSACTION-" + transactionId + ".pdf";
         String fileUrl = minIOService.uploadFile(fileName, pdfStream, "application/pdf");
 
         Document document = new Document();

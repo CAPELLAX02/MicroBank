@@ -1,4 +1,4 @@
-package com.microbank.apigateway;
+package com.microbank.apigateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

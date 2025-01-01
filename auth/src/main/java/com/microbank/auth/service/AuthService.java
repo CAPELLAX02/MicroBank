@@ -16,7 +16,6 @@ public interface AuthService {
     String activateUser(ActivationRequest request);
     Map<String, Object> loginUser(LoginRequest loginRequest);
     UserResponse getUserById(UUID userId);
-
     UserResponse getUserByKeycloakId(String keycloakId);
 
 }

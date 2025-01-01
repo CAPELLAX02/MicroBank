@@ -12,6 +12,8 @@ public class RabbitMQConfig {
         return new Queue("activation-queue", true);
     }
 
+    // TODO: Implement "reset-password-queue".
+
     @Bean
     public Queue transactionQueue() {
         return new Queue("transaction-queue", true);
