@@ -14,8 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,6 +116,26 @@ public class AccountServiceImpl implements AccountService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<AccountResponse> getAllAccounts() {
+        List<Account> accounts = accountRepository.findAll();
+        List<AccountResponse> accountResponses = new ArrayList<>();
+        for (Account a : accounts) {
+            accountResponses.add(new AccountResponse(
+                    a.getIBAN(),
+                    a.getOwnerName(),
+                    a.getBalance(),
+                    a.getUserId(),
+                    null
+            ));
+        }
+        return accountResponses;
+    }
+
+    @Override
+    public void deleteAccountByAccountId(String accountId) {
+        accountRepository.deleteById(UUID.fromString(accountId));
+    }
 
 
 }

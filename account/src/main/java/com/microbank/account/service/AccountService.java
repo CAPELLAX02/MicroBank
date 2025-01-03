@@ -15,5 +15,8 @@ public interface AccountService {
     List<AccountResponse> getAllAccountsByKeycloakId(String keycloakId);
     List<String> getIbansByKeycloakId(String keycloakId);
 
+    List<AccountResponse> getAllAccounts();
+    void deleteAccountByAccountId(String accountId);
+
 
 }

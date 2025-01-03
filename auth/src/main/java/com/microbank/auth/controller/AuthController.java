@@ -82,4 +82,6 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
+    // TODO: Create another controller named "UserController".
+
 }

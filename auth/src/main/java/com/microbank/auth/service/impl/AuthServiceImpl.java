@@ -233,6 +233,8 @@ public class AuthServiceImpl implements AuthService {
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();
+
+        // TODO: Modularize the response builds in a seperate logic.
         for (User user : users) {
             userResponses.add(new UserResponse(
                     user.getId(),

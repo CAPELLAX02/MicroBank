@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/v1/account") // TODO: rename the path: "account" -> "accounts"
 public class AccountController {
 
     private final AccountService accountService;
@@ -60,5 +60,15 @@ public class AccountController {
         return ResponseEntity.ok(IBANs);
     }
 
+    @GetMapping
+    public ResponseEntity<List<AccountResponse>> getAllAccounts() {
+        return ResponseEntity.ok(accountService.getAllAccounts());
+    }
+
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable String accountId) {
+        accountService.deleteAccountByAccountId(accountId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
