@@ -5,10 +5,14 @@ import com.microbank.auth.dto.request.LoginRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface AuthService {
+
+    List<UserResponse> getAllUsers();
+    void deleteUser(UUID id);
 
     String registerUser(RegisterRequest request);
     void saveUserToRedis(RegisterRequest request, String activationCode);

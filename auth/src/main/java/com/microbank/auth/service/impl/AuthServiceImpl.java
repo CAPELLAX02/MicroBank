@@ -229,4 +229,27 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    @Override
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserResponse> userResponses = new ArrayList<>();
+        for (User user : users) {
+            userResponses.add(new UserResponse(
+                    user.getId(),
+                    user.getKeycloakId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getUsername(),
+                    user.getEmail()
+            ));
+        }
+        return userResponses;
+    }
+
+    @Override
+    public void deleteUser(UUID id) {
+        // TODO: Also delete user from Keycloak realm permanently.
+        userRepository.deleteById(id);
+    }
+
 }
