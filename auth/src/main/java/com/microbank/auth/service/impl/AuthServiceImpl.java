@@ -174,8 +174,6 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-
-
     public Map<String, Object> loginUser(LoginRequest loginRequest) {
         try {
             RestTemplate restTemplate = new RestTemplate();

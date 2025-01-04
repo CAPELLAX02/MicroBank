@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/transaction")
@@ -53,6 +54,20 @@ public class TransactionController {
     ) {
         TransactionDetailsResponse details = transactionService.getTransactionDetailsById(transactionId);
         return ResponseEntity.ok(details);
+    }
+
+    @GetMapping("/{transactionId}")
+    public ResponseEntity<TransactionResponse> getTransactionById(
+            @PathVariable String transactionId
+    ) {
+        TransactionResponse transactionResponse = transactionService.getTransactionById(UUID.fromString(transactionId));
+        return ResponseEntity.ok(transactionResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TransactionResponse>> getAllTransactions() {
+        List<TransactionResponse> transactions = transactionService.getAllTransactions();
+        return ResponseEntity.ok(transactions);
     }
 
 }

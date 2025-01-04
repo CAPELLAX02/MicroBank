@@ -5,6 +5,7 @@ import com.microbank.transaction.dto.response.TransactionDetailsResponse;
 import com.microbank.transaction.dto.response.TransactionResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TransactionService {
 
@@ -12,5 +13,8 @@ public interface TransactionService {
     List<TransactionResponse> getMyTransactionsByAccountIBAN(String sourceAccountIBAN, String keycloakId);
     List<TransactionResponse> getMyAllTransactions(String keycloakId);
     TransactionDetailsResponse getTransactionDetailsById(String transactionId);
+
+    TransactionResponse getTransactionById(UUID transactionId);
+    List<TransactionResponse> getAllTransactions();
 
 }

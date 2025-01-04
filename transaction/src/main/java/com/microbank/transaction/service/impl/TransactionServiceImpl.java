@@ -16,6 +16,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -161,6 +162,39 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.getAmount(),
                 transaction.getTimestamp()
         );
+    }
+
+    @Override
+    public TransactionResponse getTransactionById(UUID transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with ID: " + transactionId));
+
+        return new TransactionResponse(
+                transaction.getId(),
+                transaction.getSourceAccountIBAN(),
+                transaction.getTargetAccountIBAN(),
+                transaction.getAmount(),
+                transaction.getTimestamp(),
+                transaction.getType()
+        );
+    }
+
+    @Override
+    public List<TransactionResponse> getAllTransactions() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        List<TransactionResponse> transactionResponses = new ArrayList<>();
+
+        for (Transaction t : transactions) {
+            transactionResponses.add(new TransactionResponse(
+                    t.getId(),
+                    t.getSourceAccountIBAN(),
+                    t.getTargetAccountIBAN(),
+                    t.getAmount(),
+                    t.getTimestamp(),
+                    t.getType()
+            ));
+        }
+        return transactionResponses;
     }
 
 }
