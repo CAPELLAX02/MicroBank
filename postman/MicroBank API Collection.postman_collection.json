@@ -1,0 +1,1234 @@
+{
+	"info": {
+		"_postman_id": "122e750e-11a8-41ec-9bd0-55e2be7cb5de",
+		"name": "MicroBank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30351608"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "User",
+					"item": [
+						{
+							"name": "Admin",
+							"item": [
+								{
+									"name": "Get User by ID",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8123/api/v1/admin/users/:userId",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8123",
+											"path": [
+												"api",
+												"v1",
+												"admin",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get All Users",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8123/api/v1/admin/users",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8123",
+											"path": [
+												"api",
+												"v1",
+												"admin",
+												"users"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update User Role",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"newRole\": \"ADMIN\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8123/api/v1/admin/users/:userId",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8123",
+											"path": [
+												"api",
+												"v1",
+												"admin",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update User Access",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"isBlocked\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8123/api/v1/admin/users/:userId",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8123",
+											"path": [
+												"api",
+												"v1",
+												"admin",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete User",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:8123/api/v1/admin/users/:userId",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8123",
+											"path": [
+												"api",
+												"v1",
+												"admin",
+												"users",
+												":userId"
+											],
+											"variable": [
+												{
+													"key": "userId",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Current User's Profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/users/me",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"capellax\",\n    \"firstName\": \"Ahmet\",\n    \"lastName\": \"ATAR\",\n    \"email\": \"ahmet@email.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8123/api/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"ahmet@email.com\",\n    \"activationCode\": \"840380\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8123/api/v1/auth/activate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0Y2JjMTFjMC0wNjJkLTQzYmItOGVjNi00OWMyMDNlYzRmZDYifQ.eyJleHAiOjE3MzYwMTgwNjMsImlhdCI6MTczNjAxNjI2MywianRpIjoiNGMxMzI1NDUtYzlhNi00NzNiLTkyZDItYjg0OWM1ZDk5ZjQ0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDk4L3JlYWxtcy9taWNyb2JhbmsiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjkwOTgvcmVhbG1zL21pY3JvYmFuayIsInN1YiI6IjlhOTM4ODc3LTJkYTMtNDUxYi1iYmFhLTJhOGZmNTYwZjgyMCIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJtaWNyb2JhbmstY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjgyYTA1ZmExLTc3MGItNGJjNy04NmQyLTYyZjhjYmE3MWI4MSIsInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsInNpZCI6IjgyYTA1ZmExLTc3MGItNGJjNy04NmQyLTYyZjhjYmE3MWI4MSJ9.k61z2IP-8Bx8d6UznHI4RUximCSeiT6rA9VIydhdGa4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "microbank-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "HagaWEiYLcYKGRzYmeq1qboUMFbyqlmk",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "capellax",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9098/realms/microbank/protocol/openid-connect/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9098",
+							"path": [
+								"realms",
+								"microbank",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0Y2JjMTFjMC0wNjJkLTQzYmItOGVjNi00OWMyMDNlYzRmZDYifQ.eyJleHAiOjE3MzYwMTgwNjMsImlhdCI6MTczNjAxNjI2MywianRpIjoiNGMxMzI1NDUtYzlhNi00NzNiLTkyZDItYjg0OWM1ZDk5ZjQ0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDk4L3JlYWxtcy9taWNyb2JhbmsiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjkwOTgvcmVhbG1zL21pY3JvYmFuayIsInN1YiI6IjlhOTM4ODc3LTJkYTMtNDUxYi1iYmFhLTJhOGZmNTYwZjgyMCIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJtaWNyb2JhbmstY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjgyYTA1ZmExLTc3MGItNGJjNy04NmQyLTYyZjhjYmE3MWI4MSIsInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsInNpZCI6IjgyYTA1ZmExLTc3MGItNGJjNy04NmQyLTYyZjhjYmE3MWI4MSJ9.k61z2IP-8Bx8d6UznHI4RUximCSeiT6rA9VIydhdGa4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "microbank-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "HagaWEiYLcYKGRzYmeq1qboUMFbyqlmk",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIzYTNiMDM2My1iYmU4LTQxODUtYmZkMi03YWE0YWI0NzIwYzAifQ.eyJleHAiOjE3MzYwNzA3ODQsImlhdCI6MTczNjA2ODk4NCwianRpIjoiMjFmYzZhNzQtYzExMC00NGU0LWJlNjctODRmNWRkYmUwMmIyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MDk4L3JlYWxtcy9taWNyb2JhbmsiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjkwOTgvcmVhbG1zL21pY3JvYmFuayIsInN1YiI6ImE5OGVmOTA4LTNlMTctNGQwNi1hNDhiLWRkZjQxNzU5YjkwNCIsInR5cCI6IlJlZnJlc2giLCJhenAiOiJtaWNyb2JhbmstY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6ImZjZjYxZjVjLTNmYjUtNGE5ZS1hM2FkLTU4YjQ2MWNmMGVlZSIsInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsInNpZCI6ImZjZjYxZjVjLTNmYjUtNGE5ZS1hM2FkLTU4YjQ2MWNmMGVlZSJ9.J1k5InUmP0XiVwkBwhH7As-kW5zFoGEnixg5laCpwxw",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:9098/realms/microbank/protocol/openid-connect/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9098",
+							"path": [
+								"realms",
+								"microbank",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "Get All Accounts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/accounts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"accounts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Account by ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/accounts/:accountId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"accounts",
+										":accountId"
+									],
+									"variable": [
+										{
+											"key": "accountId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Accounts by User ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/users/:userId/accounts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"users",
+										":userId",
+										"accounts"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Account Status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"isBlocked\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/accounts/:accountId/status",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"accounts",
+										":accountId",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "accountId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Account by ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/accounts/:accountId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"accounts",
+										":accountId"
+									],
+									"variable": [
+										{
+											"key": "accountId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"initialBalance\": 1000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8123/api/v1/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account Balance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 200,\n    \"isDeposit\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8123/api/v1/accounts/:accountId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								":accountId"
+							],
+							"variable": [
+								{
+									"key": "accountId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User's Accounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User's Account by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/accounts/:accountId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								":accountId"
+							],
+							"variable": [
+								{
+									"key": "accountId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Own Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/accounts/:accountId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								":accountId"
+							],
+							"variable": [
+								{
+									"key": "accountId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "Get All Transactions",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/transactions",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"transactions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Transaction by ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/transactions/:transactionId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"transactions",
+										":transactionId"
+									],
+									"variable": [
+										{
+											"key": "transactionId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Transactions by Account ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8123/api/v1/admin/accounts/:accountId/transactions",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8123",
+									"path": [
+										"api",
+										"v1",
+										"admin",
+										"accounts",
+										":accountId",
+										"transactions"
+									],
+									"variable": [
+										{
+											"key": "accountId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"targetAccountIBAN\": \"MB660355043532\",\n    \"amount\": 200,\n    \"description\": \"Transaction description.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8123/api/v1/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User's All Transactions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User's Transaction by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/transactions/:transactionId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"transactions",
+								":transactionId"
+							],
+							"variable": [
+								{
+									"key": "transactionId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User's Transactions by Account ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/accounts/:accountId/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								":accountId",
+								"transactions"
+							],
+							"variable": [
+								{
+									"key": "accountId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Document",
+			"item": [
+				{
+					"name": "Create Transaction Receipt PDF",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transactionId\": \"eeafee9b-4320-495b-ba2f-8ae1138d5bee\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8123/api/v1/documents/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction Receipt PDF",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8123/api/v1/documents/transactions/:transactionId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8123",
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"transactions",
+								":transactionId"
+							],
+							"variable": [
+								{
+									"key": "transactionId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Transaction Receipt PDF Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9000/api/v1/TRANSACTION-eeafee9b-4320-495b-ba2f-8ae1138d5bee.pdf",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"api",
+								"v1",
+								"TRANSACTION-eeafee9b-4320-495b-ba2f-8ae1138d5bee.pdf"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
