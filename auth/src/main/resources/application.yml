@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate.format_sql: true
@@ -44,14 +44,16 @@ keycloak:
     token-url: "http://localhost:9098/realms/microbank/protocol/openid-connect/token"
     grant-type: "password"
     client-id: "microbank-client"
-    client-secret: "9f5v583jKRdzpQ0eLdj8ge1FSmqowZHQ"
+    client-secret: "HagaWEiYLcYKGRzYmeq1qboUMFbyqlmk"
+  refresh-token:
+    grant-type: "refresh-token"
   config:
     server-url: "http://localhost:9098"
     realm: "master"
     username: "admin"
     password: "admin"
     client-id: "admin-cli"
-    client-secret: "KJiIqL6IlUuxxvXvu3uWYpXboImq152e"
+    client-secret: "n7SaUnwPqxQb4qfR9lrJK7gWnLPplogX"
 
 eureka:
   client:

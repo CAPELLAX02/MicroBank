@@ -2,6 +2,7 @@ package com.microbank.auth.controller;
 
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
+import com.microbank.auth.dto.request.RefreshTokenRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.service.AuthService;
@@ -55,6 +56,20 @@ public class AuthController {
     ) {
         try {
             Map<String, Object> tokens = authService.loginUser(loginRequest);
+            return ResponseEntity.ok(tokens);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(
+//            @Validated @RequestBody RefreshTokenRequest request
+            @Validated RefreshTokenRequest request
+    ) {
+        try {
+            Map<String, Object> tokens = authService.refreshToken(request);
             return ResponseEntity.ok(tokens);
 
         } catch (Exception e) {

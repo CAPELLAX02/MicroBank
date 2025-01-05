@@ -62,7 +62,7 @@ services:
       POSTGRES_USER: account_db
       POSTGRES_PASSWORD: account_db
     ports:
-      - "5432:5432"
+      - "5430:5432"
     networks:
       - microbank-network
 

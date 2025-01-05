@@ -2,6 +2,7 @@ package com.microbank.auth.service;
 
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
+import com.microbank.auth.dto.request.RefreshTokenRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
 
@@ -21,5 +22,7 @@ public interface AuthService {
     Map<String, Object> loginUser(LoginRequest loginRequest);
     UserResponse getUserById(UUID userId);
     UserResponse getUserByKeycloakId(String keycloakId);
+
+    Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest);
 
 }

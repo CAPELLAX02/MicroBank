@@ -56,7 +56,7 @@ public class TransactionController {
         return ResponseEntity.ok(details);
     }
 
-    @GetMapping("/{transactionId}")
+    @GetMapping("/admin/{transactionId}")
     public ResponseEntity<TransactionResponse> getTransactionById(
             @PathVariable String transactionId
     ) {
@@ -64,7 +64,7 @@ public class TransactionController {
         return ResponseEntity.ok(transactionResponse);
     }
 
-    @GetMapping
+    @GetMapping("/admin")
     public ResponseEntity<List<TransactionResponse>> getAllTransactions() {
         List<TransactionResponse> transactions = transactionService.getAllTransactions();
         return ResponseEntity.ok(transactions);

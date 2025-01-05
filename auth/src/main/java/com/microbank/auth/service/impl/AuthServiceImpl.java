@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microbank.auth.dto.request.ActivationRequest;
 import com.microbank.auth.dto.request.LoginRequest;
+import com.microbank.auth.dto.request.RefreshTokenRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.model.User;
@@ -54,6 +55,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${keycloak.login.grant-type}")
     private String keycloakLoginGrantType;
+
+    @Value("${keycloak.refresh-token.grant-type}")
+    private String keycloakRefreshTokenGrantType;
 
     @Value("${keycloak.login.client-id}")
     private String keycloakLoginClientId;
@@ -194,6 +198,28 @@ public class AuthServiceImpl implements AuthService {
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("Login failed: " + e.getMessage());
+        }
+    }
+
+    public Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+            requestBody.add("grant_type", keycloakRefreshTokenGrantType);
+            requestBody.add("client_id", keycloakLoginClientId);
+            requestBody.add("client_secret", keycloakLoginClientSecret);
+            requestBody.add("refresh_token", refreshTokenRequest.refreshToken());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            ResponseEntity<Map> response = restTemplate.exchange(keycloakLoginUrl, HttpMethod.POST, requestEntity, Map.class);
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Token refresh failed: " + e.getMessage());
         }
     }
 

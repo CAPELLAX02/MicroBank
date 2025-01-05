@@ -60,7 +60,7 @@ public class AccountController {
         return ResponseEntity.ok(IBANs);
     }
 
-    @GetMapping
+    @GetMapping("/admin")
     public ResponseEntity<List<AccountResponse>> getAllAccounts() {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
