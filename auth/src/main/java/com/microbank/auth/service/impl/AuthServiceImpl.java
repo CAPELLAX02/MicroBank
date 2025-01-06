@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
@@ -40,14 +41,17 @@ public class AuthServiceImpl implements AuthService {
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
     private final RabbitTemplate rabbitTemplate;
+    private final RestTemplate restTemplate;
 
-    public AuthServiceImpl(UserRepository userRepository, Keycloak keycloak, RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper, PasswordEncoder passwordEncoder, RabbitTemplate rabbitTemplate) {
+
+    public AuthServiceImpl(UserRepository userRepository, Keycloak keycloak, RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper, PasswordEncoder passwordEncoder, RabbitTemplate rabbitTemplate, RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.keycloak = keycloak;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
         this.rabbitTemplate = rabbitTemplate;
+        this.restTemplate = restTemplate;
     }
 
     @Value("${keycloak.login.token-url}")
@@ -180,7 +184,6 @@ public class AuthServiceImpl implements AuthService {
 
     public Map<String, Object> loginUser(LoginRequest loginRequest) {
         try {
-            RestTemplate restTemplate = new RestTemplate();
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
             requestBody.add("grant_type", keycloakLoginGrantType);
             requestBody.add("client_id", keycloakLoginClientId);
@@ -193,9 +196,19 @@ public class AuthServiceImpl implements AuthService {
 
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-            ResponseEntity<Map> response = restTemplate.exchange(keycloakLoginUrl, HttpMethod.POST, requestEntity, Map.class);
+
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    keycloakLoginUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Map.class
+            );
 
             return response.getBody();
+
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Login failed: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+
         } catch (Exception e) {
             throw new RuntimeException("Login failed: " + e.getMessage());
         }
@@ -203,7 +216,6 @@ public class AuthServiceImpl implements AuthService {
 
     public Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest) {
         try {
-            RestTemplate restTemplate = new RestTemplate();
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
             requestBody.add("grant_type", keycloakRefreshTokenGrantType);
             requestBody.add("client_id", keycloakLoginClientId);

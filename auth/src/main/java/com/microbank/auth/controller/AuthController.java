@@ -7,9 +7,11 @@ import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,34 +52,24 @@ public class AuthController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<?> loginUser(
-            @Validated LoginRequest loginRequest
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> loginUser(
+            @RequestBody @Validated LoginRequest loginRequest
     ) {
-        try {
             Map<String, Object> tokens = authService.loginUser(loginRequest);
             return ResponseEntity.ok(tokens);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
     }
 
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(
-//            @Validated @RequestBody RefreshTokenRequest request
-            @Validated RefreshTokenRequest request
+    @PostMapping(value = "/refresh-token", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> refreshToken(
+            @RequestBody @Validated RefreshTokenRequest request
     ) {
-        try {
             Map<String, Object> tokens = authService.refreshToken(request);
             return ResponseEntity.ok(tokens);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/admin/users/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> getUserById(
             @Valid @PathVariable UUID userId
     ) {
@@ -98,5 +90,14 @@ public class AuthController {
     }
 
     // TODO: Create another controller named "UserController".
+
+    @GetMapping("/users/me")
+    public ResponseEntity<UserResponse> getCurrentUsersProfile(
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        String keycloakId = jwt.getClaimAsString("sub");
+        UserResponse userResponse = authService.getUserByKeycloakId(keycloakId);
+        return ResponseEntity.ok(userResponse);
+    }
 
 }

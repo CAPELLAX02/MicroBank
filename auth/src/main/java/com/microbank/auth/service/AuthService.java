@@ -5,6 +5,7 @@ import com.microbank.auth.dto.request.LoginRequest;
 import com.microbank.auth.dto.request.RefreshTokenRequest;
 import com.microbank.auth.dto.request.RegisterRequest;
 import com.microbank.auth.dto.response.UserResponse;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 import java.util.Map;
@@ -21,8 +22,10 @@ public interface AuthService {
     String activateUser(ActivationRequest request);
     Map<String, Object> loginUser(LoginRequest loginRequest);
     UserResponse getUserById(UUID userId);
+
     UserResponse getUserByKeycloakId(String keycloakId);
 
     Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest);
+
 
 }

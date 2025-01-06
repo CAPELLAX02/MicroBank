@@ -1,11 +1,9 @@
 package com.microbank.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record RefreshTokenRequest(
-        @NotBlank
-        @NotNull
+        @NotBlank(message = "Refresh token cannot be blank")
         String refreshToken
 ) {
 }
