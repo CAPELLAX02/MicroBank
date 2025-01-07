@@ -1,9 +1,14 @@
 package com.microbank.auth.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.UUID;
 
 public record UpdateAccessRequest(
-        @NotBlank(message = "isBanned field cannot be blank")
+        @NotNull(message = "User ID cannot be empty")
+        UUID userId,
+
+        @NotNull(message = "isBanned field cannot be empty")
         boolean isBanned
 ) {
 }

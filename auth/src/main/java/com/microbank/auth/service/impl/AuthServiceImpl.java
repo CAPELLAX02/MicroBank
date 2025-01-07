@@ -3,14 +3,13 @@ package com.microbank.auth.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microbank.auth.dto.request.ActivationRequest;
-import com.microbank.auth.dto.request.LoginRequest;
-import com.microbank.auth.dto.request.RefreshTokenRequest;
-import com.microbank.auth.dto.request.RegisterRequest;
+import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
+import com.microbank.auth.exception.NotFoundException;
 import com.microbank.auth.model.User;
 import com.microbank.auth.model.enums.UserRole;
 import com.microbank.auth.repository.UserRepository;
+import com.microbank.auth.response.BaseApiResponse;
 import com.microbank.auth.service.AuthService;
 import com.microbank.auth.service.utils.UserServiceUtils;
 import jakarta.ws.rs.core.Response;
@@ -21,6 +20,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +32,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -82,7 +81,23 @@ public class AuthServiceImpl implements AuthService {
     private String keycloakLoginClientSecret;
 
     @Override
-    public String registerUser(RegisterRequest request) {
+    public BaseApiResponse<String> registerUser(RegisterRequest request) {
+        if (userRepository.existsByUsername(request.username())) {
+            return new BaseApiResponse<>(
+                    HttpStatus.CONFLICT.value(),
+                    "User with the same username (" + request.username() + ") already exists",
+                    null
+            );
+        }
+
+        if (userRepository.existsByEmail(request.email())) {
+            return new BaseApiResponse<>(
+                    HttpStatus.CONFLICT.value(),
+                    "User with the same email (" + request.email() + ") already exists",
+                    null
+            );
+        }
+
         String activationCode = generateActivationCode();
         saveUserToRedis(request, activationCode);
 
@@ -97,10 +112,18 @@ public class AuthServiceImpl implements AuthService {
             rabbitTemplate.convertAndSend("activation-queue", jsonMessage);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send message to RabbitMQ", e);
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Failed to send activation email.",
+                    null
+            );
         }
 
-        return "User registered successfully. Check your email for the activation code.";
+        return new BaseApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Registration successful, activation code sent to " + request.email(),
+                null
+        );
     }
 
     @Override
@@ -130,16 +153,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String activateUser(ActivationRequest request) {
+    public BaseApiResponse<String> activateUser(ActivationRequest request) {
         try {
             String userDataJson = redisTemplate.opsForValue().get(request.email());
             if (userDataJson == null) {
-                throw new RuntimeException("Activation code expired or invalid.");
+                return new BaseApiResponse<>(
+                        HttpStatus.NOT_FOUND.value(),
+                        "Activation code expired or invalid.",
+                        null
+                );
             }
 
             Map<String, Object> userData = objectMapper.readValue(userDataJson, new TypeReference<>() {});
             if (!request.activationCode().equals(userData.get("activationCode"))) {
-                throw new RuntimeException("Invalid activation code.");
+                return new BaseApiResponse<>(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Invalid or expired activation code.",
+                        null
+                );
             }
 
             UsersResource usersResource = keycloak.realm("microbank").users();
@@ -188,14 +219,22 @@ public class AuthServiceImpl implements AuthService {
 
             redisTemplate.delete(request.email());
 
-            return "User activated and registered successfully.";
+            return new BaseApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Account activation successful, you can login to the system.",
+                    null
+            );
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error processing user data from Redis", e);
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error processing user data from Redis.",
+                    null
+            );
         }
     }
 
-    public Map<String, Object> loginUser(LoginRequest loginRequest) {
+    public BaseApiResponse<Map<String, Object>> loginUser(LoginRequest loginRequest) {
         try {
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
             requestBody.add("grant_type", keycloakLoginGrantType);
@@ -206,28 +245,34 @@ public class AuthServiceImpl implements AuthService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     keycloakLoginUrl,
                     HttpMethod.POST,
                     requestEntity,
-                    Map.class
+                    new ParameterizedTypeReference<>() {}
             );
 
-            return response.getBody();
+            return new BaseApiResponse<>(HttpStatus.OK.value(), "Login successful.", response.getBody());
 
         } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Login failed: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            return new BaseApiResponse<>(
+                    HttpStatus.UNAUTHORIZED.value(),
+                    "Invalid username or password.",
+                    null
+            );
 
         } catch (Exception e) {
-            throw new RuntimeException("Login failed: " + e.getMessage());
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Login failed due to server error: " + e.getMessage(),
+                    null
+            );
         }
     }
 
-    public Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest) {
+    public BaseApiResponse<Map<String, Object>> refreshToken(RefreshTokenRequest refreshTokenRequest) {
         try {
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
             requestBody.add("grant_type", keycloakRefreshTokenGrantType);
@@ -237,23 +282,32 @@ public class AuthServiceImpl implements AuthService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-            ResponseEntity<Map> response = restTemplate.exchange(keycloakLoginUrl, HttpMethod.POST, requestEntity, Map.class);
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    keycloakLoginUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<>() {}
+            );
 
-            return response.getBody();
+            return new BaseApiResponse<>(HttpStatus.OK.value(), "Token refreshed successfully.", response.getBody());
+
         } catch (Exception e) {
-            throw new RuntimeException("Token refresh failed: " + e.getMessage());
+            return new BaseApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Token refresh failed: " + e.getMessage(), null);
         }
     }
 
     @Override
-    public UserResponse getUserById(UUID userId) {
+    public BaseApiResponse<UserResponse> getUserById(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return userServiceUtils.buildUserResponse(user);
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "User with the ID: " + userId + " retrieved successfully.",
+                userServiceUtils.buildUserResponse(user)
+        );
     }
 
     @Override
@@ -265,33 +319,59 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return userServiceUtils.buildUserResponses(users);
+    public BaseApiResponse<UserResponse> getCurrentUser(String keycloakId) {
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Current user's profile retrieved successfully.",
+                getUserByKeycloakId(keycloakId)
+        );
     }
 
     @Override
-    public void deleteUser(UUID id) {
-        User user = userRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+    public BaseApiResponse<List<UserResponse>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "All users retrieved successfully.",
+                userServiceUtils.buildUserResponses(users)
+        );
+    }
+
+    @Override
+    public BaseApiResponse<String> deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
 
         UsersResource usersResource = keycloak.realm("microbank").users();
 
         try {
             usersResource.get(user.getKeycloakId()).remove();
-
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting user: " + e.getMessage());
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error deleting user from Keycloak: " + e.getMessage(),
+                    null
+            );
         }
 
-        userRepository.deleteById(id);
+        userRepository.deleteById(userId);
+
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "User with the ID: " + userId + " deleted successfully.",
+                null
+        );
     }
 
 //    @Transactional
     @Override
-    public UserResponse updateUserRole(UUID userId, String newRole) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    public BaseApiResponse<UserResponse> updateUserRole(UpdateRoleRequest request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + request.userId()));
+
+        String oldRole = user.getRole().name();
+        String newRole = request.newRole().toUpperCase();
 
         UsersResource usersResource = keycloak.realm("microbank").users();
         List<RoleRepresentation> assignedRoles = usersResource.get(user.getKeycloakId())
@@ -320,28 +400,36 @@ public class AuthServiceImpl implements AuthService {
                 .realmLevel()
                 .add(Collections.singletonList(newKeycloakRole));
 
-        user.setRole(UserRole.valueOf(newRole.toUpperCase()));
+        user.setRole(UserRole.valueOf(newRole));
         userRepository.save(user);
 
-        return userServiceUtils.buildUserResponse(user);
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Role of the user with the ID: " + request.userId() + " changed from " + oldRole + " to " + newRole + " successfully.",
+                userServiceUtils.buildUserResponse(user)
+        );
     }
 
 //    @Transactional
     @Override
-    public UserResponse updateUserAccess(UUID userId, boolean isBanned) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    public BaseApiResponse<UserResponse> updateUserAccess(UpdateAccessRequest request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + request.userId()));
 
         UsersResource usersResource = keycloak.realm("microbank").users();
         UserRepresentation userRepresentation = usersResource.get(user.getKeycloakId()).toRepresentation();
 
-        userRepresentation.setEnabled(!isBanned);
+        userRepresentation.setEnabled(!request.isBanned());
         usersResource.get(user.getKeycloakId()).update(userRepresentation);
 
-        user.setBanned(isBanned);
+        user.setBanned(request.isBanned());
         userRepository.save(user);
 
-        return userServiceUtils.buildUserResponse(user);
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Access of the user with the ID: " + request.userId() + " updated successfully.",
+                userServiceUtils.buildUserResponse(user)
+        );
     }
 
 }

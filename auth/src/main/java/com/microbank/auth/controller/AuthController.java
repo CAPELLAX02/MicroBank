@@ -2,6 +2,7 @@ package com.microbank.auth.controller;
 
 import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
+import com.microbank.auth.response.BaseApiResponse;
 import com.microbank.auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,48 +26,45 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/keycloak/{keycloakId}")
-    public ResponseEntity<UserResponse> getUserByKeycloakId(
-            @PathVariable String keycloakId
-    ) {
-        return ResponseEntity.ok(authService.getUserByKeycloakId(keycloakId));
-    }
-
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(
-            @Validated @RequestBody RegisterRequest request
+    public ResponseEntity<BaseApiResponse<String>> registerUser(
+            @RequestBody @Valid RegisterRequest request
     ) {
-        String message = authService.registerUser(request);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.status(201).body(authService.registerUser(request));
     }
 
     @PostMapping("/activate")
-    public ResponseEntity<String> activateUser(
-            @Validated @RequestBody ActivationRequest request
+    public ResponseEntity<BaseApiResponse<String>> activateUser(
+            @RequestBody @Valid ActivationRequest request
     ) {
-        String message = authService.activateUser(request);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(authService.activateUser(request));
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> loginUser(
-            @RequestBody @Validated LoginRequest loginRequest
+    public ResponseEntity<BaseApiResponse<Map<String, Object>>> loginUser(
+            @RequestBody @Valid LoginRequest loginRequest
     ) {
-            Map<String, Object> tokens = authService.loginUser(loginRequest);
-            return ResponseEntity.ok(tokens);
+            return ResponseEntity.ok(authService.loginUser(loginRequest));
     }
 
     @PostMapping(value = "/refresh-token", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> refreshToken(
-            @RequestBody @Validated RefreshTokenRequest request
+    public ResponseEntity<BaseApiResponse<Map<String, Object>>> refreshToken(
+            @RequestBody @Valid RefreshTokenRequest request
     ) {
-            Map<String, Object> tokens = authService.refreshToken(request);
-            return ResponseEntity.ok(tokens);
+        return ResponseEntity.ok(authService.refreshToken(request));
+    }
+
+    @GetMapping("/users/me")
+    public ResponseEntity<BaseApiResponse<UserResponse>> getCurrentUsersProfile(
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        String keycloakId = jwt.getClaimAsString("sub");
+        return ResponseEntity.ok(authService.getCurrentUser(keycloakId));
     }
 
     @GetMapping("/admin/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> getUserById(
+    public ResponseEntity<BaseApiResponse<UserResponse>> getUserById(
             @Valid @PathVariable UUID userId
     ) {
         return ResponseEntity.ok(authService.getUserById(userId));
@@ -75,45 +72,32 @@ public class AuthController {
 
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
+    public ResponseEntity<BaseApiResponse<List<UserResponse>>> getAllUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
     }
 
     @DeleteMapping("/admin/users/{userId}")
-    public ResponseEntity<String> deleteUserById(
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseApiResponse<String>> deleteUserById(
             @PathVariable UUID userId
     ) {
-        authService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(authService.deleteUser(userId));
     }
 
-    // TODO: Create another controller named "UserController".
-
-    @GetMapping("/users/me")
-    public ResponseEntity<UserResponse> getCurrentUsersProfile(
-            @AuthenticationPrincipal Jwt jwt
-    ) {
-        String keycloakId = jwt.getClaimAsString("sub");
-        UserResponse userResponse = authService.getUserByKeycloakId(keycloakId);
-        return ResponseEntity.ok(userResponse);
-    }
-
-    @PatchMapping("/admin/users/{userId}/role")
+    @PatchMapping("/admin/users/role")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateUserRole(
-            @PathVariable UUID userId,
-            @RequestBody UpdateRoleRequest request
+    public ResponseEntity<BaseApiResponse<UserResponse>> updateUserRole(
+            @RequestBody @Valid UpdateRoleRequest request
     ) {
-        return ResponseEntity.ok(authService.updateUserRole(userId, request.newRole()));
+        return ResponseEntity.ok(authService.updateUserRole(request));
     }
 
-    @PatchMapping("/admin/users/{userId}/access")
+    @PatchMapping("/admin/users/access")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateUserAccess(
-            @PathVariable UUID userId,
-            @RequestBody UpdateAccessRequest request
+    public ResponseEntity<BaseApiResponse<UserResponse>> updateUserAccess(
+            @RequestBody @Valid UpdateAccessRequest request
     ) {
-        return ResponseEntity.ok(authService.updateUserAccess(userId, request.isBanned()));
+        return ResponseEntity.ok(authService.updateUserAccess(request));
     }
 
 }

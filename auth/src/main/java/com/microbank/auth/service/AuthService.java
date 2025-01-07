@@ -1,11 +1,8 @@
 package com.microbank.auth.service;
 
-import com.microbank.auth.dto.request.ActivationRequest;
-import com.microbank.auth.dto.request.LoginRequest;
-import com.microbank.auth.dto.request.RefreshTokenRequest;
-import com.microbank.auth.dto.request.RegisterRequest;
+import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
-import org.springframework.security.oauth2.jwt.Jwt;
+import com.microbank.auth.response.BaseApiResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -13,21 +10,22 @@ import java.util.UUID;
 
 public interface AuthService {
 
-    List<UserResponse> getAllUsers();
-    void deleteUser(UUID id);
-
-    String registerUser(RegisterRequest request);
     void saveUserToRedis(RegisterRequest request, String activationCode);
     String generateActivationCode();
-    String activateUser(ActivationRequest request);
-    Map<String, Object> loginUser(LoginRequest loginRequest);
-    UserResponse getUserById(UUID userId);
-
     UserResponse getUserByKeycloakId(String keycloakId);
 
-    Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest);
+    BaseApiResponse<String> registerUser(RegisterRequest request);
+    BaseApiResponse<String> activateUser(ActivationRequest request);
+    BaseApiResponse<Map<String, Object>> loginUser(LoginRequest loginRequest);
+    BaseApiResponse<Map<String, Object>> refreshToken(RefreshTokenRequest refreshTokenRequest);
 
-    UserResponse updateUserRole(UUID userId, String newRole);
-    UserResponse updateUserAccess(UUID userId, boolean isBanned);
+    BaseApiResponse<UserResponse> getCurrentUser(String keycloakId);
+    BaseApiResponse<UserResponse> getUserById(UUID userId);
+    BaseApiResponse<List<UserResponse>> getAllUsers();
+
+    BaseApiResponse<UserResponse> updateUserRole(UpdateRoleRequest request);
+    BaseApiResponse<UserResponse> updateUserAccess(UpdateAccessRequest request);
+
+    BaseApiResponse<String> deleteUser(UUID userId);
 
 }
