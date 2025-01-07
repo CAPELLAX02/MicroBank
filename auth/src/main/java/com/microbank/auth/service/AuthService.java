@@ -27,5 +27,7 @@ public interface AuthService {
 
     Map<String, Object> refreshToken(RefreshTokenRequest refreshTokenRequest);
 
+    UserResponse updateUserRole(UUID userId, String newRole);
+    UserResponse updateUserAccess(UUID userId, boolean isBanned);
 
 }

@@ -1,9 +1,6 @@
 package com.microbank.auth.controller;
 
-import com.microbank.auth.dto.request.ActivationRequest;
-import com.microbank.auth.dto.request.LoginRequest;
-import com.microbank.auth.dto.request.RefreshTokenRequest;
-import com.microbank.auth.dto.request.RegisterRequest;
+import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -76,12 +73,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.getUserById(userId));
     }
 
-    @GetMapping("/users")
+    @GetMapping("/admin/users")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/admin/users/{userId}")
     public ResponseEntity<String> deleteUserById(
             @PathVariable UUID userId
     ) {
@@ -98,6 +96,24 @@ public class AuthController {
         String keycloakId = jwt.getClaimAsString("sub");
         UserResponse userResponse = authService.getUserByKeycloakId(keycloakId);
         return ResponseEntity.ok(userResponse);
+    }
+
+    @PatchMapping("/admin/users/{userId}/role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> updateUserRole(
+            @PathVariable UUID userId,
+            @RequestBody UpdateRoleRequest request
+    ) {
+        return ResponseEntity.ok(authService.updateUserRole(userId, request.newRole()));
+    }
+
+    @PatchMapping("/admin/users/{userId}/access")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> updateUserAccess(
+            @PathVariable UUID userId,
+            @RequestBody UpdateAccessRequest request
+    ) {
+        return ResponseEntity.ok(authService.updateUserAccess(userId, request.isBanned()));
     }
 
 }

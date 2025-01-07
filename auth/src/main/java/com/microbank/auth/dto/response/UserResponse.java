@@ -1,13 +1,17 @@
 package com.microbank.auth.dto.response;
 
+import com.microbank.auth.model.enums.UserRole;
+
 import java.util.UUID;
 
 public record UserResponse(
         UUID id,
         String keycloakId,
+        String username,
+        String email,
         String firstName,
         String lastName,
-        String username,
-        String email
+        UserRole role,
+        boolean isBanned
 ) {
 }

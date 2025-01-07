@@ -28,12 +28,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/activate").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh-token").permitAll()
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/auth/activate").permitAll()
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/auth/refresh-token").permitAll()
 
-                        .requestMatchers("/api/v1/auth/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,   "/api/v1/auth/admin/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,   "/api/v1/auth/admin/users/{userId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/auth/admin/users/{userId}/role").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/auth/admin/users/{userId}/access").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/auth/admin/users/{userId}").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

@@ -41,7 +41,22 @@ public class User {
     @Column
     private String activationCode;
 
-    public User(UUID id, String keycloakId, String username, UserRole role, String firstName, String lastName, String email, String password, boolean activated, String activationCode) {
+    @Column(nullable = false)
+    private boolean isBanned = false;
+
+    public User(
+            UUID id,
+            String keycloakId,
+            String username,
+            UserRole role,
+            String firstName,
+            String lastName,
+            String email,
+            String password,
+            boolean activated,
+            String activationCode,
+            boolean isBanned
+    ) {
         this.id = id;
         this.keycloakId = keycloakId;
         this.username = username;
@@ -52,6 +67,7 @@ public class User {
         this.password = password;
         this.activated = activated;
         this.activationCode = activationCode;
+        this.isBanned = isBanned;
     }
 
     public User() {}
@@ -135,4 +151,13 @@ public class User {
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
     }
+
+    public boolean isBanned() {
+        return isBanned;
+    }
+
+    public void setBanned(boolean banned) {
+        isBanned = banned;
+    }
+
 }

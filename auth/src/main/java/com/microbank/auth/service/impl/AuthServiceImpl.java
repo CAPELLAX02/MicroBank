@@ -12,6 +12,7 @@ import com.microbank.auth.model.User;
 import com.microbank.auth.model.enums.UserRole;
 import com.microbank.auth.repository.UserRepository;
 import com.microbank.auth.service.AuthService;
+import com.microbank.auth.service.utils.UserServiceUtils;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -31,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -42,9 +44,18 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RabbitTemplate rabbitTemplate;
     private final RestTemplate restTemplate;
+    private final UserServiceUtils userServiceUtils;
 
-
-    public AuthServiceImpl(UserRepository userRepository, Keycloak keycloak, RedisTemplate<String, String> redisTemplate, ObjectMapper objectMapper, PasswordEncoder passwordEncoder, RabbitTemplate rabbitTemplate, RestTemplate restTemplate) {
+    public AuthServiceImpl(
+            UserRepository userRepository,
+            Keycloak keycloak,
+            RedisTemplate<String, String> redisTemplate,
+            ObjectMapper objectMapper,
+            PasswordEncoder passwordEncoder,
+            RabbitTemplate rabbitTemplate,
+            RestTemplate restTemplate,
+            UserServiceUtils userServiceUtils
+    ) {
         this.userRepository = userRepository;
         this.keycloak = keycloak;
         this.redisTemplate = redisTemplate;
@@ -52,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
         this.passwordEncoder = passwordEncoder;
         this.rabbitTemplate = rabbitTemplate;
         this.restTemplate = restTemplate;
+        this.userServiceUtils = userServiceUtils;
     }
 
     @Value("${keycloak.login.token-url}")
@@ -169,6 +181,7 @@ public class AuthServiceImpl implements AuthService {
             dbUser.setPassword(passwordEncoder.encode((String) userData.get("password")));
             dbUser.setActivated(true);
             dbUser.setRole(UserRole.USER);
+            dbUser.setBanned(false);
             dbUser.setActivationCode(null);
 
             userRepository.save(dbUser);
@@ -240,14 +253,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new UserResponse(
-                user.getId(),
-                user.getKeycloakId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getUsername(),
-                user.getEmail()
-        );
+        return userServiceUtils.buildUserResponse(user);
     }
 
     @Override
@@ -255,39 +261,87 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new RuntimeException("User not found with Keycloak ID: " + keycloakId));
 
-        return new UserResponse(
-                user.getId(),
-                user.getKeycloakId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getUsername(),
-                user.getEmail()
-        );
+        return userServiceUtils.buildUserResponse(user);
     }
 
     @Override
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
-        List<UserResponse> userResponses = new ArrayList<>();
-
-        // TODO: Modularize the response builds in a seperate logic.
-        for (User user : users) {
-            userResponses.add(new UserResponse(
-                    user.getId(),
-                    user.getKeycloakId(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getUsername(),
-                    user.getEmail()
-            ));
-        }
-        return userResponses;
+        return userServiceUtils.buildUserResponses(users);
     }
 
     @Override
     public void deleteUser(UUID id) {
-        // TODO: Also delete user from Keycloak realm permanently.
+        User user = userRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+
+        UsersResource usersResource = keycloak.realm("microbank").users();
+
+        try {
+            usersResource.get(user.getKeycloakId()).remove();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting user: " + e.getMessage());
+        }
+
         userRepository.deleteById(id);
+    }
+
+//    @Transactional
+    @Override
+    public UserResponse updateUserRole(UUID userId, String newRole) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        UsersResource usersResource = keycloak.realm("microbank").users();
+        List<RoleRepresentation> assignedRoles = usersResource.get(user.getKeycloakId())
+                .roles()
+                .realmLevel()
+                .listAll();
+
+        List<RoleRepresentation> rolesToRemove = assignedRoles.stream()
+                .filter(role -> !role.getName().equals("default-roles-microbank"))
+                .toList();
+
+        if (!rolesToRemove.isEmpty()) {
+            usersResource.get(user.getKeycloakId())
+                    .roles()
+                    .realmLevel()
+                    .remove(rolesToRemove);
+        }
+
+        RoleRepresentation newKeycloakRole = keycloak.realm("microbank")
+                .roles()
+                .get(newRole)
+                .toRepresentation();
+
+        usersResource.get(user.getKeycloakId())
+                .roles()
+                .realmLevel()
+                .add(Collections.singletonList(newKeycloakRole));
+
+        user.setRole(UserRole.valueOf(newRole.toUpperCase()));
+        userRepository.save(user);
+
+        return userServiceUtils.buildUserResponse(user);
+    }
+
+//    @Transactional
+    @Override
+    public UserResponse updateUserAccess(UUID userId, boolean isBanned) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        UsersResource usersResource = keycloak.realm("microbank").users();
+        UserRepresentation userRepresentation = usersResource.get(user.getKeycloakId()).toRepresentation();
+
+        userRepresentation.setEnabled(!isBanned);
+        usersResource.get(user.getKeycloakId()).update(userRepresentation);
+
+        user.setBanned(isBanned);
+        userRepository.save(user);
+
+        return userServiceUtils.buildUserResponse(user);
     }
 
 }
