@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.exception.NotFoundException;
+import com.microbank.auth.exception.UnauthorizedException;
 import com.microbank.auth.model.User;
 import com.microbank.auth.model.enums.UserRole;
 import com.microbank.auth.repository.UserRepository;
@@ -257,9 +258,13 @@ public class AuthServiceImpl implements AuthService {
             return new BaseApiResponse<>(HttpStatus.OK.value(), "Login successful.", response.getBody());
 
         } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new UnauthorizedException("Invalid username or password.");
+            }
+
             return new BaseApiResponse<>(
-                    HttpStatus.UNAUTHORIZED.value(),
-                    "Invalid username or password.",
+                    e.getStatusCode().value(),
+                    "Login failed: " + e.getStatusText(),
                     null
             );
 
