@@ -1,20 +1,20 @@
 package com.microbank.transaction.controller;
 
 import com.microbank.transaction.dto.request.CreateTransactionRequest;
-import com.microbank.transaction.dto.response.TransactionDetailsResponse;
 import com.microbank.transaction.dto.response.TransactionResponse;
+import com.microbank.transaction.response.BaseApiResponse;
 import com.microbank.transaction.service.TransactionService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/transaction")
+@RequestMapping("/api/v1/transactions")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -24,50 +24,64 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionResponse> createTransaction(
-            @Valid @RequestBody CreateTransactionRequest request
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BaseApiResponse<TransactionResponse>> createTransaction(
+            @RequestBody @Valid CreateTransactionRequest request
     ) {
-        return ResponseEntity.ok(transactionService.createTransaction(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createTransaction(request));
     }
 
-    @GetMapping("/account/{IBAN}")
-    public ResponseEntity<List<TransactionResponse>> getTransactionsByAccountIBAN(
-            @PathVariable String IBAN,
-            @AuthenticationPrincipal Jwt jwt
-    ) {
-        String keycloakUserId = jwt.getClaimAsString("sub");
-        return ResponseEntity.ok(transactionService.getMyTransactionsByAccountIBAN(IBAN, keycloakUserId));
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getCurrentUsersAllTransactions() {
+        return ResponseEntity.ok(transactionService.getCurrentUsersTransactions());
     }
 
-    @GetMapping
-    public ResponseEntity<List<TransactionResponse>> getMyAllTransactions(
-            @AuthenticationPrincipal Jwt jwt
+    @GetMapping("/me/{transactionId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BaseApiResponse<TransactionResponse>> getCurrentUsersTransactionById(
+            @PathVariable UUID transactionId
     ) {
-        String keycloakId = jwt.getClaimAsString("sub");
-        List<TransactionResponse> transactions = transactionService.getMyAllTransactions(keycloakId);
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.ok(transactionService.getCurrentUsersTransactionById(transactionId));
     }
 
-    @GetMapping("/details/{transactionId}")
-    public ResponseEntity<TransactionDetailsResponse> getTransactionDetails(
-            @PathVariable String transactionId
+    @GetMapping("/me/accounts/{accountId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getCurrentUsersTransactionsByAccountId(
+            @PathVariable UUID accountId
     ) {
-        TransactionDetailsResponse details = transactionService.getTransactionDetailsById(transactionId);
-        return ResponseEntity.ok(details);
+        return ResponseEntity.ok(transactionService.getCurrentUsersTransactionsByAccountId(accountId));
     }
 
-    @GetMapping("/admin/{transactionId}")
-    public ResponseEntity<TransactionResponse> getTransactionById(
-            @PathVariable String transactionId
-    ) {
-        TransactionResponse transactionResponse = transactionService.getTransactionById(UUID.fromString(transactionId));
-        return ResponseEntity.ok(transactionResponse);
+
+    @GetMapping("/admin/transactions")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getAllTransactions() {
+        return ResponseEntity.ok(transactionService.getAllTransactions());
     }
 
-    @GetMapping("/admin")
-    public ResponseEntity<List<TransactionResponse>> getAllTransactions() {
-        List<TransactionResponse> transactions = transactionService.getAllTransactions();
-        return ResponseEntity.ok(transactions);
+    @GetMapping("/admin/transactions/{transactionId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseApiResponse<TransactionResponse>> getTransactionById(
+            @PathVariable UUID transactionId
+    ) {
+        return ResponseEntity.ok(transactionService.getTransactionById(transactionId));
+    }
+
+    @GetMapping("/admin/accounts/{accountId}/transactions")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getTransactionsByAccountId(
+            @PathVariable UUID accountId
+    ) {
+        return ResponseEntity.ok(transactionService.getTransactionsByAccountId(accountId));
+    }
+
+    @GetMapping("/admin/users/{userId}/transactions")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getTransactionsByUserId(
+            @PathVariable UUID userId
+    ) {
+        return ResponseEntity.ok(transactionService.getTransactionsByUserId(userId));
     }
 
 }

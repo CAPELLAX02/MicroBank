@@ -6,10 +6,11 @@ import java.util.UUID;
 
 public record TransactionResponse(
         UUID id,
-        String sourceAccountIBAN,
-        String targetAccountIBAN,
+        UUID senderAccountId,
+        UUID receiverAccountId,
         BigDecimal amount,
-        LocalDateTime timestamp,
-        String type
+        String status,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }

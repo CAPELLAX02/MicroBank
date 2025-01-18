@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,   "/api/v1/accounts").hasRole("USER")
-                        .requestMatchers(HttpMethod.PATCH,  "/api/v1/accounts/accounts/balance").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT,    "/api/v1/accounts/accounts/balance").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,    "/api/v1/accounts").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,    "/api/v1/accounts/{accountId}").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/{accountId}").hasRole("USER")

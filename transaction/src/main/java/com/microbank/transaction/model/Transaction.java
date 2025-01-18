@@ -1,6 +1,10 @@
 package com.microbank.transaction.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,29 +19,59 @@ public class Transaction {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name= "source_account_iban", nullable = false)
-    private String sourceAccountIBAN;
+    @Column(nullable = false)
+    private UUID sourceAccountId;
 
-    @Column(name= "target_account_iban", nullable = false)
-    private String targetAccountIBAN;
+    @Column(nullable = false)
+    private UUID receiverAccountId;
 
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
 
     @Column(nullable = false)
+    private TransactionStatus status;
+
+    @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    @Column(nullable = false, length = 20)
-    private String type;
+    @Column(length = 500)
+    private String description;
+
+    @CreationTimestamp
+    @Column
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.timestamp == null) this.timestamp = LocalDateTime.now();
+    }
 
     public Transaction() {}
 
-    public Transaction(String sourceAccountIBAN, String targetAccountIBAN, BigDecimal amount, LocalDateTime timestamp, String type) {
-        this.sourceAccountIBAN = sourceAccountIBAN;
-        this.targetAccountIBAN = targetAccountIBAN;
+    public Transaction(
+            UUID id,
+            UUID sourceAccountId,
+            UUID receiverAccountId,
+            BigDecimal amount,
+            TransactionStatus status,
+            LocalDateTime timestamp,
+            String description,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+        this.id = id;
+        this.sourceAccountId = sourceAccountId;
+        this.receiverAccountId = receiverAccountId;
         this.amount = amount;
+        this.status = status;
         this.timestamp = timestamp;
-        this.type = type;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UUID getId() {
@@ -48,20 +82,20 @@ public class Transaction {
         this.id = id;
     }
 
-    public String getSourceAccountIBAN() {
-        return sourceAccountIBAN;
+    public UUID getSourceAccountId() {
+        return sourceAccountId;
     }
 
-    public void setSourceAccountIBAN(String sourceAccountIBAN) {
-        this.sourceAccountIBAN = sourceAccountIBAN;
+    public void setSourceAccountId(UUID sourceAccountId) {
+        this.sourceAccountId = sourceAccountId;
     }
 
-    public String getTargetAccountIBAN() {
-        return targetAccountIBAN;
+    public UUID getReceiverAccountId() {
+        return receiverAccountId;
     }
 
-    public void setTargetAccountIBAN(String targetAccountIBAN) {
-        this.targetAccountIBAN = targetAccountIBAN;
+    public void setReceiverAccountId(UUID receiverAccountId) {
+        this.receiverAccountId = receiverAccountId;
     }
 
     public BigDecimal getAmount() {
@@ -72,6 +106,14 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
+
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
@@ -80,12 +122,28 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 
-    public String getType() {
-        return type;
+    public String getDescription() {
+        return description;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 }

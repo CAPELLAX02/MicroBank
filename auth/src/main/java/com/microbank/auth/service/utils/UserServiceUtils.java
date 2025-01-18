@@ -17,9 +17,7 @@ public class UserServiceUtils {
                 u.getUsername(),
                 u.getEmail(),
                 u.getFirstName(),
-                u.getLastName(),
-                u.getRole(),
-                u.isBanned()
+                u.getLastName()
         );
     }
 

@@ -1,20 +1,22 @@
 package com.microbank.transaction.service;
 
 import com.microbank.transaction.dto.request.CreateTransactionRequest;
-import com.microbank.transaction.dto.response.TransactionDetailsResponse;
 import com.microbank.transaction.dto.response.TransactionResponse;
+import com.microbank.transaction.response.BaseApiResponse;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface TransactionService {
 
-    TransactionResponse createTransaction(CreateTransactionRequest transaction);
-    List<TransactionResponse> getMyTransactionsByAccountIBAN(String sourceAccountIBAN, String keycloakId);
-    List<TransactionResponse> getMyAllTransactions(String keycloakId);
-    TransactionDetailsResponse getTransactionDetailsById(String transactionId);
+    BaseApiResponse<TransactionResponse> createTransaction(CreateTransactionRequest request);
+    BaseApiResponse<List<TransactionResponse>> getCurrentUsersTransactions();
+    BaseApiResponse<TransactionResponse> getCurrentUsersTransactionById(UUID transactionId);
+    BaseApiResponse<List<TransactionResponse>> getCurrentUsersTransactionsByAccountId(UUID accountId);
 
-    TransactionResponse getTransactionById(UUID transactionId);
-    List<TransactionResponse> getAllTransactions();
+    BaseApiResponse<List<TransactionResponse>> getAllTransactions();
+    BaseApiResponse<TransactionResponse> getTransactionById(UUID transactionId);
+    BaseApiResponse<List<TransactionResponse>> getTransactionsByAccountId(UUID accountId);
+    BaseApiResponse<List<TransactionResponse>> getTransactionsByUserId(UUID userId);
 
 }

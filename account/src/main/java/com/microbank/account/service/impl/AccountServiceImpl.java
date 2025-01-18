@@ -4,6 +4,7 @@ import com.microbank.account.dto.request.CreateAccountRequest;
 import com.microbank.account.dto.request.UpdateAccountStatusRequest;
 import com.microbank.account.dto.request.UpdateBalanceRequest;
 import com.microbank.account.dto.response.AccountResponse;
+import com.microbank.account.dto.response.MinimalAccountResponse;
 import com.microbank.account.exceptions.CustomException;
 import com.microbank.account.exceptions.NotFoundException;
 import com.microbank.account.exceptions.UnauthorizedException;
@@ -121,6 +122,24 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public BaseApiResponse<MinimalAccountResponse> getMinimalAccountInfo(UUID accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new NotFoundException("Account not found with ID: " + accountId));
+
+        MinimalAccountResponse response = new MinimalAccountResponse(
+                account.getId(),
+                account.getIBAN(),
+                account.getOwnerName()
+        );
+
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Minimal account info retrieved successfully.",
+                response
+        );
+    }
+
+    @Override
     public BaseApiResponse<AccountResponse> getCurrentUsersAccountById(UUID accountId) {
         var user = authServiceClient.getCurrentUser();
 
@@ -162,7 +181,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BaseApiResponse<List<AccountResponse>> getAllAccounts() {
-        List<AccountResponse> accountResponseList = accountResponseBuilder.buildAccountResponses(accountRepository.findAll());
+        List<Account> accounts = accountRepository.findAll();
+        if (accounts.isEmpty()) {
+            throw new NotFoundException("No accounts found.");
+        }
+        List<AccountResponse> accountResponseList = accountResponseBuilder.buildAccountResponses(accounts);
         return new BaseApiResponse<>(
                 HttpStatus.OK.value(),
                 "All accounts retrieved successfully.",

@@ -1,19 +1,22 @@
 package com.microbank.transaction.dto.request;
 
-import jakarta.validation.constraints.Min;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record CreateTransactionRequest(
-        @NotNull(message = "Source account IBAN is required")
-        String sourceAccountIBAN,
+        @NotNull(message = "Account ID cannot be empty")
+        UUID sourceAccountId,
 
-        @NotNull(message = "Target account IBAN is required")
-        String targetAccountIBAN,
+        @NotNull(message = "Target Account ID cannot be empty")
+        UUID receiverAccountId,
 
-        @NotNull(message = "Amount is required")
-        @Min(value = 0, message = "Amount must be greater than zero")
-        BigDecimal amount
+        @NotNull(message = "Amount cannot be empty")
+        BigDecimal amount,
+
+        @Nullable
+        String description
 ) {
 }
