@@ -1,15 +1,14 @@
 package com.microbank.account.dto.response;
 
-import jakarta.annotation.Nullable;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
 public record AccountResponse(
+        UUID id,
         String IBAN,
-        String ownerName,
         BigDecimal balance,
-        UUID userId,
-        @Nullable String email
+        boolean isBlocked,
+        String ownerName,
+        UUID ownerId
 ) {
 }

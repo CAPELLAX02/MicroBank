@@ -9,9 +9,6 @@ import java.util.UUID;
 
 public interface AccountRepository extends JpaRepository<Account, UUID> {
 
-    Optional<Account> findByIBAN(String IBAN);
-    Boolean existsAccountByKeycloakId(String keycloakId);
-    List<Account> findAllByKeycloakId(String keycloakId);
-
+    List<Account> findAllByOwnerId(UUID ownerId);
 
 }

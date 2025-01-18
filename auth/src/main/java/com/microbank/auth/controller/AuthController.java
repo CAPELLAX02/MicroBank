@@ -44,7 +44,7 @@ public class AuthController {
     public ResponseEntity<BaseApiResponse<Map<String, Object>>> loginUser(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
-            return ResponseEntity.ok(authService.loginUser(loginRequest));
+        return ResponseEntity.ok(authService.loginUser(loginRequest));
     }
 
     @PostMapping(value = "/refresh-token", consumes = MediaType.APPLICATION_JSON_VALUE)

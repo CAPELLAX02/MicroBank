@@ -20,23 +20,23 @@ public class Account {
     private BigDecimal balance;
 
     @Column(nullable = false)
+    private boolean isBlocked;
+
+    @Column(nullable = false)
     private String ownerName;
 
     @Column(nullable = false)
-    private UUID userId;
-
-    @Column(nullable = false)
-    private String keycloakId;
+    private UUID ownerId;
 
     public Account() {}
 
-    public Account(UUID id, String IBAN, BigDecimal balance, String ownerName, UUID userId, String keycloakId) {
+    public Account(UUID id, String IBAN, BigDecimal balance, boolean isBlocked, String ownerName, UUID ownerId) {
         this.id = id;
         this.IBAN = IBAN;
         this.balance = balance;
+        this.isBlocked = isBlocked;
         this.ownerName = ownerName;
-        this.userId = userId;
-        this.keycloakId = keycloakId;
+        this.ownerId = ownerId;
     }
 
     public UUID getId() {
@@ -63,6 +63,14 @@ public class Account {
         this.balance = balance;
     }
 
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
     public String getOwnerName() {
         return ownerName;
     }
@@ -71,20 +79,12 @@ public class Account {
         this.ownerName = ownerName;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public UUID getOwnerId() {
+        return ownerId;
     }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public String getKeycloakId() {
-        return keycloakId;
-    }
-
-    public void setKeycloakId(String keycloakId) {
-        this.keycloakId = keycloakId;
+    public void setOwnerId(UUID ownerId) {
+        this.ownerId = ownerId;
     }
 
 }
