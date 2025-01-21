@@ -15,7 +15,6 @@ import com.microbank.transaction.repository.TransactionRepository;
 import com.microbank.transaction.response.BaseApiResponse;
 import com.microbank.transaction.service.TransactionService;
 import com.microbank.transaction.service.utils.TransactionResponseBuilder;
-import feign.FeignException;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
@@ -56,61 +55,52 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UnauthorizedException("User not authenticated.");
         }
 
-        var accountsResponse = accountServiceClient.getCurrentUsersAccounts();
-        if (accountsResponse == null || accountsResponse.getData() == null || accountsResponse.getData().isEmpty()) {
-            throw new UnauthorizedException("No accounts found for the current user.");
+        var senderAccountResponse = accountServiceClient.getCurrentUsersAccountById(request.senderAccountId());
+        if (senderAccountResponse == null || senderAccountResponse.getData() == null) {
+            throw new UnauthorizedException("Source account does not belong to the current user.");
         }
 
-        List<UUID> userAccountIds = accountsResponse.getData()
-                .stream()
-                .map(AccountResponse::id)
-                .toList();
+        var sourceAccount = accountServiceClient.getAccountById(request.senderAccountId()).getData();
+        var receiverAccount = accountServiceClient.getAccountById(request.receiverAccountId()).getData();
 
-        if (!userAccountIds.contains(request.sourceAccountId())) {
-            throw new UnauthorizedException("You are not authorized to perform transactions from this account.");
+        if (sourceAccount.balance().compareTo(request.amount()) < 0) {
+            throw new CustomException("Insufficient balance.");
         }
 
-        try {
-            accountServiceClient.updateAccountBalance(
-                    new UpdateBalanceRequest(
-                            request.sourceAccountId(),
-                            request.amount(),
-                            false
-                    )
-            );
+        accountServiceClient.updateAccountBalance(
+                new UpdateBalanceRequest(
+                        request.senderAccountId(),
+                        request.amount(),
+                        false
+                )
+        );
 
-            accountServiceClient.updateAccountBalance(
-                    new UpdateBalanceRequest(
-                            request.receiverAccountId(),
-                            request.amount(),
-                            true
-                    )
-            );
-
-        } catch (FeignException e) {
-            if (e.status() == 400 && e.contentUTF8().contains("Insufficient balance")) {
-                throw new CustomException("Insufficient balance to complete the transaction.");
-            }
-            throw e;
-        }
+        accountServiceClient.updateAccountBalance(
+                new UpdateBalanceRequest(
+                        request.receiverAccountId(),
+                        request.amount(),
+                        true
+                )
+        );
 
         Transaction transaction = new Transaction();
-        transaction.setSourceAccountId(request.sourceAccountId());
+        transaction.setSenderAccountId(request.senderAccountId());
         transaction.setReceiverAccountId(request.receiverAccountId());
         transaction.setAmount(request.amount());
         transaction.setTimestamp(LocalDateTime.now());
         transaction.setDescription(request.description());
         transactionRepository.save(transaction);
 
-        String senderIban = accountServiceClient.getIbanByAccountId(request.sourceAccountId()).getData();
-        String receiverIban = accountServiceClient.getIbanByAccountId(request.receiverAccountId()).getData();
-
         TransactionEvent event = new TransactionEvent(
                 transaction.getId(),
-                transaction.getSourceAccountId(),
+                transaction.getSenderAccountId(),
                 transaction.getReceiverAccountId(),
-                senderIban,
-                receiverIban,
+                sourceAccount.ownerEmail(),
+                receiverAccount.ownerEmail(),
+                sourceAccount.IBAN(),
+                receiverAccount.IBAN(),
+                sourceAccount.ownerName(),
+                receiverAccount.ownerName(),
                 transaction.getAmount(),
                 transaction.getDescription(),
                 transaction.getTimestamp()
@@ -145,7 +135,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(AccountResponse::id)
                 .toList();
 
-        List<Transaction> transactions = transactionRepository.findAllBySourceAccountIdInOrReceiverAccountIdIn(accountIds, accountIds);
+        List<Transaction> transactions = transactionRepository.findAllBySenderAccountIdInOrReceiverAccountIdIn(accountIds, accountIds);
 
         List<TransactionResponse> transactionResponses = transactionResponseBuilder.buildTransactionResponses(transactions);
 
@@ -171,7 +161,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(AccountResponse::id)
                 .toList();
 
-        if (!accountIds.contains(transaction.getSourceAccountId()) &&
+        if (!accountIds.contains(transaction.getSenderAccountId()) &&
                 !accountIds.contains(transaction.getReceiverAccountId())) {
             throw new UnauthorizedException("You are not authorized to access this transaction information.");
         }
@@ -192,7 +182,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UnauthorizedException("You are not authorized to access this account's transactions.");
         }
 
-        List<Transaction> transactions = transactionRepository.findAllBySourceAccountIdOrReceiverAccountId(accountId, accountId);
+        List<Transaction> transactions = transactionRepository.findAllBySenderAccountIdOrReceiverAccountId(accountId, accountId);
 
         List<TransactionResponse> transactionResponses = transactionResponseBuilder.buildTransactionResponses(transactions);
         return new BaseApiResponse<>(
@@ -233,7 +223,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public BaseApiResponse<List<TransactionResponse>> getTransactionsByAccountId(UUID accountId) {
-        List<Transaction> transactions = transactionRepository.findAllBySourceAccountIdOrReceiverAccountId(accountId, accountId);
+        List<Transaction> transactions = transactionRepository.findAllBySenderAccountIdOrReceiverAccountId(accountId, accountId);
 
         if (transactions.isEmpty()) {
             throw new NotFoundException("No transactions found for the account with the ID: " + accountId);
@@ -255,11 +245,12 @@ public class TransactionServiceImpl implements TransactionService {
             throw new NotFoundException("No accounts found for user with ID: " + userId);
         }
 
-        List<UUID> accountIds = accountsResponse.getData().stream()
+        List<UUID> accountIds = accountsResponse.getData()
+                .stream()
                 .map(AccountResponse::id)
                 .toList();
 
-        List<Transaction> transactions = transactionRepository.findAllBySourceAccountIdInOrReceiverAccountIdIn(accountIds, accountIds);
+        List<Transaction> transactions = transactionRepository.findAllBySenderAccountIdInOrReceiverAccountIdIn(accountIds, accountIds);
 
         if (transactions.isEmpty()) {
             throw new NotFoundException("No transactions found for the user with ID: " + userId);

@@ -13,6 +13,7 @@ import org.thymeleaf.context.Context;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -48,45 +49,41 @@ public class MailServiceImpl implements MailService {
         mailSender.send(message);
     }
 
-//    @Override
-//    public void sendTransactionMail(String to, String sourceName, String targetName, String sourceIBAN, String targetIBAN, BigDecimal amount, LocalDateTime timestamp) throws MessagingException {
-//        MimeMessage message = mailSender.createMimeMessage();
-//        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//
-//        Context context = new Context();
-//        context.setVariable("sourceName", sourceName);
-//        context.setVariable("targetName", targetName);
-//        context.setVariable("sourceIBAN", sourceIBAN);
-//        context.setVariable("targetIBAN", targetIBAN);
-//        context.setVariable("amount", amount);
-//        context.setVariable("timestamp", timestamp);
-//
-//        String content = templateEngine.process("transaction-email", context);
-//
-//        helper.setFrom(senderEmail);
-//        helper.setTo(to);
-//        helper.setSubject("Transaction Receipt");
-//        helper.setText(content, true);
-//
-//        mailSender.send(message);
-//    }
-//
-//    private String formatTimestamp(LocalDateTime timestamp) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, hh:mm a");
-//        return timestamp.format(formatter);
-//    }
-
     @Override
-    public void sendTransactionMail(String to, String subject, String body) throws MessagingException {
+    public void sendTransactionMail(
+            String to,
+            UUID transactionId,
+            String senderName,
+            String receiverName,
+            String senderIban,
+            String receiverIban,
+            BigDecimal amount,
+            String description,
+            LocalDateTime timestamp
+    ) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
+        Context context = new Context();
+        context.setVariable("transactionId", transactionId.toString());
+        context.setVariable("senderName", senderName);
+        context.setVariable("receiverName", receiverName);
+        context.setVariable("senderIban", senderIban);
+        context.setVariable("receiverIban", receiverIban);
+        context.setVariable("amount", amount.toPlainString());
+        context.setVariable("description", description);
+        context.setVariable("timestamp", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        String content = templateEngine.process("transaction-email", context);
+
         helper.setFrom(senderEmail);
         helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(body, true);
+        helper.setSubject("Transaction Notification");
+        helper.setText(content, true);
 
         mailSender.send(message);
     }
+
+
 
 }

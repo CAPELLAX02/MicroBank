@@ -17,7 +17,8 @@ public class AccountResponseBuilder {
                 a.getBalance(),
                 a.isBlocked(),
                 a.getOwnerName(),
-                a.getOwnerId()
+                a.getOwnerId(),
+                a.getOwnerEmail()
         );
     }
 

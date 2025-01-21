@@ -16,7 +16,7 @@ public class Transaction {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID sourceAccountId;
+    private UUID senderAccountId;
 
     @Column(nullable = false)
     private UUID receiverAccountId;
@@ -34,14 +34,14 @@ public class Transaction {
 
     public Transaction(
             UUID id,
-            UUID sourceAccountId,
+            UUID senderAccountId,
             UUID receiverAccountId,
             BigDecimal amount,
             LocalDateTime timestamp,
             String description
     ) {
         this.id = id;
-        this.sourceAccountId = sourceAccountId;
+        this.senderAccountId = senderAccountId;
         this.receiverAccountId = receiverAccountId;
         this.amount = amount;
         this.timestamp = timestamp;
@@ -56,12 +56,12 @@ public class Transaction {
         this.id = id;
     }
 
-    public UUID getSourceAccountId() {
-        return sourceAccountId;
+    public UUID getSenderAccountId() {
+        return senderAccountId;
     }
 
-    public void setSourceAccountId(UUID sourceAccountId) {
-        this.sourceAccountId = sourceAccountId;
+    public void setSenderAccountId(UUID senderAccountId) {
+        this.senderAccountId = senderAccountId;
     }
 
     public UUID getReceiverAccountId() {

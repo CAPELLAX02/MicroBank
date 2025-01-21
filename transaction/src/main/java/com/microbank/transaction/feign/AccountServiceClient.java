@@ -19,6 +19,9 @@ public interface AccountServiceClient {
     @GetMapping
     BaseApiResponse<List<AccountResponse>> getCurrentUsersAccounts();
 
+    @GetMapping("/admin/accounts/{accountId}")
+    BaseApiResponse<AccountResponse> getAccountById(@PathVariable("accountId") UUID accountId);
+
     @GetMapping("/{accountId}")
     BaseApiResponse<AccountResponse> getCurrentUsersAccountById(@PathVariable("accountId") UUID accountId);
 

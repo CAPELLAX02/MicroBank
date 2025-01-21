@@ -13,7 +13,7 @@ public class TransactionResponseBuilder {
     public TransactionResponse buildTransactionResponse(Transaction t) {
         return new TransactionResponse(
                 t.getId(),
-                t.getSourceAccountId(),
+                t.getReceiverAccountId(),
                 t.getReceiverAccountId(),
                 t.getAmount(),
                 t.getDescription()

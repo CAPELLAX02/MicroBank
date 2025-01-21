@@ -1,5 +1,6 @@
-package com.microbank.transaction.dto.event;
+package com.microbank.notification.event;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -17,5 +18,5 @@ public record TransactionEvent(
         BigDecimal amount,
         String description,
         LocalDateTime timestamp
-) {
+) implements Serializable {
 }

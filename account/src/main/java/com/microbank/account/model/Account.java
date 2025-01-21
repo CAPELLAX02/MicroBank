@@ -28,15 +28,19 @@ public class Account {
     @Column(nullable = false)
     private UUID ownerId;
 
+    @Column(nullable = false)
+    private String ownerEmail;
+
     public Account() {}
 
-    public Account(UUID id, String IBAN, BigDecimal balance, boolean isBlocked, String ownerName, UUID ownerId) {
+    public Account(UUID id, String IBAN, BigDecimal balance, boolean isBlocked, String ownerName, UUID ownerId, String ownerEmail) {
         this.id = id;
         this.IBAN = IBAN;
         this.balance = balance;
         this.isBlocked = isBlocked;
         this.ownerName = ownerName;
         this.ownerId = ownerId;
+        this.ownerEmail = ownerEmail;
     }
 
     public UUID getId() {
@@ -85,6 +89,14 @@ public class Account {
 
     public void setOwnerId(UUID ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 
 }

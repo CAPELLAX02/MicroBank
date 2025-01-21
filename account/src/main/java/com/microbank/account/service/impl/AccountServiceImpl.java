@@ -61,6 +61,7 @@ public class AccountServiceImpl implements AccountService {
             account.setOwnerName((user.firstName() + " " + user.lastName()).toUpperCase());
             account.setBalance(request.initialBalance());
             account.setOwnerId(user.id());
+            account.setOwnerEmail(user.email());
 
             account = accountRepository.save(account);
 
@@ -105,6 +106,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public BaseApiResponse<List<AccountResponse>> getCurrentUsersAccounts() {
         var user = authServiceClient.getCurrentUser();
+        if (user == null) {
+            throw new UnauthorizedException("User not authenticated");
+        }
         List<Account> accounts = accountRepository.findAllByOwnerId(user.getData().id());
         List<AccountResponse> response = accountResponseBuilder.buildAccountResponses(accounts);
         return new BaseApiResponse<>(

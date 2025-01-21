@@ -8,16 +8,16 @@ import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
-    List<Transaction> findAllBySourceAccountId(UUID sourceAccountId);
-    List<Transaction> findAllBySourceAccountIdIn(List<UUID> sourceAccountIds);
+    List<Transaction> findAllBySenderAccountId(UUID senderAccountId);
+    List<Transaction> findAllBySenderAccountIdIn(List<UUID> senderAccountIds);
 
-    List<Transaction> findAllBySourceAccountIdInOrReceiverAccountIdIn(
-            List<UUID> sourceAccountIds,
+    List<Transaction> findAllBySenderAccountIdInOrReceiverAccountIdIn(
+            List<UUID> senderAccountId,
             List<UUID> receiverAccountIds
     );
 
-    List<Transaction> findAllBySourceAccountIdOrReceiverAccountId(
-            UUID sourceAccountId,
+    List<Transaction> findAllBySenderAccountIdOrReceiverAccountId(
+            UUID senderAccountId,
             UUID receiverAccountId
     );
 

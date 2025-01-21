@@ -9,6 +9,7 @@ public record AccountResponse(
         BigDecimal balance,
         boolean isBlocked,
         String ownerName,
-        UUID ownerId
+        UUID ownerId,
+        String ownerEmail
 ) {
 }

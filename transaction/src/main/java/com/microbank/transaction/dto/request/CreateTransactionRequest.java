@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record CreateTransactionRequest(
         @NotNull(message = "Account ID cannot be empty")
-        UUID sourceAccountId,
+        UUID senderAccountId,
 
         @NotNull(message = "Target Account ID cannot be empty")
         UUID receiverAccountId,

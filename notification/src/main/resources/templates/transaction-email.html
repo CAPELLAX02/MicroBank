@@ -18,7 +18,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background-color: #007bff;
+            background-color: #c0104e;
             color: white;
             padding: 15px;
             border-radius: 8px 8px 0 0;
@@ -61,28 +61,37 @@
     <div class="header">Transaction Notification</div>
     <div class="content">
         <p>Dear User,</p>
+<!--        <p>Dear , <span th:text="${firstName} + ' ' + ${lastName}"></span></p>-->
         <p>A transaction has occurred with the following details:</p>
         <div class="details">
             <table>
                 <tr>
+                    <th>Transaction ID</th>
+                    <td th:text="${transactionId}"></td>
+                </tr>
+                <tr>
                     <th>Sender Name</th>
-                    <td th:text="${sourceName}"></td>
+                    <td th:text="${senderName}"></td>
                 </tr>
                 <tr>
                     <th>Sender IBAN</th>
-                    <td th:text="${sourceIBAN}"></td>
+                    <td th:text="${senderIban}"></td>
                 </tr>
                 <tr>
                     <th>Recipient Name</th>
-                    <td th:text="${targetName}"></td>
+                    <td th:text="${receiverName}"></td>
                 </tr>
                 <tr>
                     <th>Recipient IBAN</th>
-                    <td th:text="${targetIBAN}"></td>
+                    <td th:text="${receiverIban}"></td>
                 </tr>
                 <tr>
                     <th>Amount</th>
                     <td th:text="${amount} + ' USD'"></td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td th:text="${description}"></td>
                 </tr>
                 <tr>
                     <th>Timestamp</th>
