@@ -4,7 +4,6 @@ import com.microbank.account.dto.request.CreateAccountRequest;
 import com.microbank.account.dto.request.UpdateAccountStatusRequest;
 import com.microbank.account.dto.request.UpdateBalanceRequest;
 import com.microbank.account.dto.response.AccountResponse;
-import com.microbank.account.dto.response.MinimalAccountResponse;
 import com.microbank.account.exceptions.CustomException;
 import com.microbank.account.exceptions.NotFoundException;
 import com.microbank.account.exceptions.UnauthorizedException;
@@ -81,14 +80,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BaseApiResponse<AccountResponse> updateAccountBalance(UpdateBalanceRequest request) {
-        var user = authServiceClient.getCurrentUser();
-
         Account account = accountRepository.findById(request.accountId())
                 .orElseThrow(() -> new NotFoundException("Account not found with ID: " + request.accountId()));
-
-        if (!account.getOwnerId().equals(user.getData().id())) {
-            throw new UnauthorizedException("You are not authorized to update this account.");
-        }
 
         BigDecimal newBalance = request.isDeposit()
                 ? account.getBalance().add(request.amount())
@@ -122,19 +115,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public BaseApiResponse<MinimalAccountResponse> getMinimalAccountInfo(UUID accountId) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new NotFoundException("Account not found with ID: " + accountId));
-
-        MinimalAccountResponse response = new MinimalAccountResponse(
-                account.getId(),
-                account.getIBAN(),
-                account.getOwnerName()
-        );
+    public BaseApiResponse<String> getIbanByAccountId(UUID accountId) {
+        String response = accountRepository.findById(accountId)
+                .map(Account::getIBAN)
+                .orElseThrow(() -> new CustomException("IBAN of the account (" + accountId + ") not found"));
 
         return new BaseApiResponse<>(
                 HttpStatus.OK.value(),
-                "Minimal account info retrieved successfully.",
+                "IBAN retrieved successfully for the account with the ID: " + accountId,
                 response
         );
     }

@@ -34,7 +34,7 @@ public class TransactionController {
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getCurrentUsersAllTransactions() {
-        return ResponseEntity.ok(transactionService.getCurrentUsersTransactions());
+        return ResponseEntity.ok(transactionService.getCurrentUsersAllTransactions());
     }
 
     @GetMapping("/me/{transactionId}")

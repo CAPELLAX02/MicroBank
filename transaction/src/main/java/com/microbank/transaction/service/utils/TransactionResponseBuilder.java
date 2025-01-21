@@ -16,9 +16,7 @@ public class TransactionResponseBuilder {
                 t.getSourceAccountId(),
                 t.getReceiverAccountId(),
                 t.getAmount(),
-                t.getDescription(),
-                t.getCreatedAt(),
-                t.getUpdatedAt()
+                t.getDescription()
         );
     }
 

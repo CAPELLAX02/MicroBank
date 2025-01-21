@@ -48,32 +48,45 @@ public class MailServiceImpl implements MailService {
         mailSender.send(message);
     }
 
+//    @Override
+//    public void sendTransactionMail(String to, String sourceName, String targetName, String sourceIBAN, String targetIBAN, BigDecimal amount, LocalDateTime timestamp) throws MessagingException {
+//        MimeMessage message = mailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//
+//        Context context = new Context();
+//        context.setVariable("sourceName", sourceName);
+//        context.setVariable("targetName", targetName);
+//        context.setVariable("sourceIBAN", sourceIBAN);
+//        context.setVariable("targetIBAN", targetIBAN);
+//        context.setVariable("amount", amount);
+//        context.setVariable("timestamp", timestamp);
+//
+//        String content = templateEngine.process("transaction-email", context);
+//
+//        helper.setFrom(senderEmail);
+//        helper.setTo(to);
+//        helper.setSubject("Transaction Receipt");
+//        helper.setText(content, true);
+//
+//        mailSender.send(message);
+//    }
+//
+//    private String formatTimestamp(LocalDateTime timestamp) {
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, hh:mm a");
+//        return timestamp.format(formatter);
+//    }
+
     @Override
-    public void sendTransactionMail(String to, String sourceName, String targetName, String sourceIBAN, String targetIBAN, BigDecimal amount, LocalDateTime timestamp) throws MessagingException {
+    public void sendTransactionMail(String to, String subject, String body) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        Context context = new Context();
-        context.setVariable("sourceName", sourceName);
-        context.setVariable("targetName", targetName);
-        context.setVariable("sourceIBAN", sourceIBAN);
-        context.setVariable("targetIBAN", targetIBAN);
-        context.setVariable("amount", amount);
-        context.setVariable("timestamp", timestamp);
-
-        String content = templateEngine.process("transaction-email", context);
-
         helper.setFrom(senderEmail);
         helper.setTo(to);
-        helper.setSubject("Transaction Receipt");
-        helper.setText(content, true);
+        helper.setSubject(subject);
+        helper.setText(body, true);
 
         mailSender.send(message);
-    }
-
-    private String formatTimestamp(LocalDateTime timestamp) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, hh:mm a");
-        return timestamp.format(formatter);
     }
 
 }

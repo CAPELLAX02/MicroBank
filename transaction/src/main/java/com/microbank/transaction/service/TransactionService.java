@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface TransactionService {
 
     BaseApiResponse<TransactionResponse> createTransaction(CreateTransactionRequest request);
-    BaseApiResponse<List<TransactionResponse>> getCurrentUsersTransactions();
+    BaseApiResponse<List<TransactionResponse>> getCurrentUsersAllTransactions();
     BaseApiResponse<TransactionResponse> getCurrentUsersTransactionById(UUID transactionId);
     BaseApiResponse<List<TransactionResponse>> getCurrentUsersTransactionsByAccountId(UUID accountId);
 

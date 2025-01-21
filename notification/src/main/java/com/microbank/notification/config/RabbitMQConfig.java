@@ -19,4 +19,9 @@ public class RabbitMQConfig {
         return new Queue("transaction-queue", true);
     }
 
+    @Bean
+    public Queue transactionCompletedQueue() {
+        return new Queue("transaction-completed", true);
+    }
+
 }

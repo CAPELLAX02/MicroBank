@@ -1,16 +1,17 @@
 package com.microbank.transaction.dto.event;
 
-import com.microbank.transaction.model.TransactionStatus;
-
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record TransactionRequestedEvent(
+public record TransactionEvent(
         UUID transactionId,
         UUID senderAccountId,
         UUID receiverAccountId,
+        String senderAccountIban,
+        String receiverAccountIban,
         BigDecimal amount,
         String description,
-        TransactionStatus status
+        LocalDateTime timestamp
 ) {
 }

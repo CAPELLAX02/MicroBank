@@ -4,7 +4,6 @@ import com.microbank.account.dto.request.CreateAccountRequest;
 import com.microbank.account.dto.request.UpdateAccountStatusRequest;
 import com.microbank.account.dto.request.UpdateBalanceRequest;
 import com.microbank.account.dto.response.AccountResponse;
-import com.microbank.account.dto.response.MinimalAccountResponse;
 import com.microbank.account.response.BaseApiResponse;
 import com.microbank.account.service.AccountService;
 import jakarta.validation.Valid;
@@ -34,7 +33,7 @@ public class AccountController {
     }
 
     @PutMapping("/balance")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseApiResponse<AccountResponse>> updateAccountBalance(
             @RequestBody UpdateBalanceRequest request
     ) {
@@ -55,12 +54,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getCurrentUsersAccountById(accountId));
     }
 
-    @GetMapping("/minimal/{accountId}")
+    @GetMapping("/{accountId}/iban")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<MinimalAccountResponse>> getMinimalAccountInfo(
+    public ResponseEntity<BaseApiResponse<String>> getMinimalAccountInfo(
             @PathVariable UUID accountId
     ) {
-        return ResponseEntity.ok(accountService.getMinimalAccountInfo(accountId));
+        return ResponseEntity.ok(accountService.getIbanByAccountId(accountId));
     }
 
 

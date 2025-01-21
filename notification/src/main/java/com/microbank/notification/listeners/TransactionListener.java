@@ -23,37 +23,37 @@ public class TransactionListener {
         this.objectMapper = objectMapper;
     }
 
-    @RabbitListener(queues = "transaction-queue")
-    public void handleTransactionMessage(String message) {
-        logger.info("Raw message from RabbitMQ: {}", message);
-
-        try {
-            TransactionEvent event = objectMapper.readValue(message, TransactionEvent.class);
-
-            logger.info("Parsed Transaction Event: {}", event);
-
-            mailService.sendTransactionMail(
-                    event.sourceAccountEmail(),
-                    event.sourceAccountIBAN(),
-                    event.targetAccountIBAN(),
-                    event.sourceName(),
-                    event.targetName(),
-                    event.amount(),
-                    event.timestamp()
-            );
-
-            mailService.sendTransactionMail(
-                    event.targetAccountEmail(),
-                    event.sourceAccountIBAN(),
-                    event.targetAccountIBAN(),
-                    event.sourceName(),
-                    event.targetName(),
-                    event.amount(),
-                    event.timestamp()
-            );
-        } catch (Exception e) {
-            logger.error("Error while processing transaction message", e);
-        }
-    }
+//    @RabbitListener(queues = "transaction-queue")
+//    public void handleTransactionMessage(String message) {
+//        logger.info("Raw message from RabbitMQ: {}", message);
+//
+//        try {
+//            TransactionEvent event = objectMapper.readValue(message, TransactionEvent.class);
+//
+//            logger.info("Parsed Transaction Event: {}", event);
+//
+//            mailService.sendTransactionMail(
+//                    event.sourceAccountEmail(),
+//                    event.sourceAccountIBAN(),
+//                    event.targetAccountIBAN(),
+//                    event.sourceName(),
+//                    event.targetName(),
+//                    event.amount(),
+//                    event.timestamp()
+//            );
+//
+//            mailService.sendTransactionMail(
+//                    event.targetAccountEmail(),
+//                    event.sourceAccountIBAN(),
+//                    event.targetAccountIBAN(),
+//                    event.sourceName(),
+//                    event.targetName(),
+//                    event.amount(),
+//                    event.timestamp()
+//            );
+//        } catch (Exception e) {
+//            logger.error("Error while processing transaction message", e);
+//        }
+//    }
 
 }

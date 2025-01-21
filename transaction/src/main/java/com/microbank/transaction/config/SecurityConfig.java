@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,  "/api/v1/transactions/admin/users/{userId}/transactions").hasRole("ADMIN")
 
                         // Feign Permissions
-                        .requestMatchers(HttpMethod.PATCH,"/api/v1/accounts/balance").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT,  "/api/v1/accounts/balance").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/{accountId}").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/minimal/{accountId}").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/admin/users/{userId}").hasRole("ADMIN")

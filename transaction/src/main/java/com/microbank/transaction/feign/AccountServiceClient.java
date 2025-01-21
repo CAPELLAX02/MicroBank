@@ -3,10 +3,12 @@ package com.microbank.transaction.feign;
 import com.microbank.transaction.config.FeignConfig;
 import com.microbank.transaction.dto.request.UpdateBalanceRequest;
 import com.microbank.transaction.dto.response.AccountResponse;
-import com.microbank.transaction.dto.response.MinimalAccountResponse;
 import com.microbank.transaction.response.BaseApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,14 +22,11 @@ public interface AccountServiceClient {
     @GetMapping("/{accountId}")
     BaseApiResponse<AccountResponse> getCurrentUsersAccountById(@PathVariable("accountId") UUID accountId);
 
-    @GetMapping("/minimal/{accountId}")
-    BaseApiResponse<MinimalAccountResponse> getMinimalAccountInfo(@PathVariable("accountId") UUID accountId);
+    @GetMapping("/{accountId}/iban")
+    BaseApiResponse<String> getIbanByAccountId(@PathVariable("accountId") UUID accountId);
 
     @PutMapping("/balance")
     BaseApiResponse<AccountResponse> updateAccountBalance(@RequestBody UpdateBalanceRequest request);
-
-    @GetMapping("/admin/accounts/{accountId}")
-    BaseApiResponse<AccountResponse> getAccountById(@PathVariable("accountId") UUID accountId);
 
     @GetMapping("/admin/users/{userId}/accounts")
     BaseApiResponse<List<AccountResponse>> getAccountsByUserId(@PathVariable("userId") UUID userId);

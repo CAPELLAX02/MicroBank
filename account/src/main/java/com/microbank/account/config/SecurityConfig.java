@@ -25,10 +25,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,   "/api/v1/accounts").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT,    "/api/v1/accounts/accounts/balance").hasRole("USER")
+//                        .requestMatchers(HttpMethod.PUT,    "/api/v1/accounts/accounts/balance").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT,    "/api/v1/accounts/accounts/balance").permitAll()
                         .requestMatchers(HttpMethod.GET,    "/api/v1/accounts").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,    "/api/v1/accounts/{accountId}").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/{accountId}").hasRole("USER")
+
+                        .requestMatchers(HttpMethod.GET,    "/api/v1/accounts/{accountId}/iban").hasRole("USER")
 
                         .requestMatchers(HttpMethod.GET,    "/api/v1/admin/accounts").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,    "/api/v1/admin/accounts/{accountId}").hasRole("ADMIN")
