@@ -13,7 +13,7 @@ public class Document {
     private UUID id;
 
     @Column(name = "transaction_id", nullable = false, unique = true)
-    private String transactionId;
+    private UUID transactionId;
 
     @Column(name = "file_name", nullable = false, length = 512)
     private String fileName;
@@ -23,7 +23,7 @@ public class Document {
 
     public Document() {}
 
-    public Document(UUID id, String transactionId, String fileName, String fileUrl) {
+    public Document(UUID id, UUID transactionId, String fileName, String fileUrl) {
         this.id = id;
         this.transactionId = transactionId;
         this.fileName = fileName;
@@ -38,11 +38,11 @@ public class Document {
         this.id = id;
     }
 
-    public String getTransactionId() {
+    public UUID getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(String transactionId) {
+    public void setTransactionId(UUID transactionId) {
         this.transactionId = transactionId;
     }
 

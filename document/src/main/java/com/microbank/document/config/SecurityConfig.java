@@ -3,6 +3,7 @@ package com.microbank.document.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,8 +24,8 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/transaction/**").hasRole("USER")
-                        .requestMatchers("/api/v1/documents/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{documentId}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{transactionId}").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

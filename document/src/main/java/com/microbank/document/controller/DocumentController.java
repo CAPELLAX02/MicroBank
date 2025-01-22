@@ -5,6 +5,8 @@ import com.microbank.document.service.DocumentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/documents")
 public class DocumentController {
@@ -15,18 +17,18 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @PostMapping("/{transactionId}")
-    public ResponseEntity<TransactionDocumentResponse> createTransactionDocument(
-            @PathVariable String transactionId
-    ) {
-        return ResponseEntity.ok(documentService.createTransactionDocument(transactionId));
-    }
-
     @GetMapping("/{documentId}")
     public ResponseEntity<TransactionDocumentResponse> getTransactionDocument(
-            @PathVariable String documentId
+            @PathVariable UUID documentId
     ) {
         return ResponseEntity.ok(documentService.getTransactionDocument(documentId));
+    }
+
+    @GetMapping("/transactions/{transactionId}")
+    public ResponseEntity<TransactionDocumentResponse> getTransactionDocumentByTransactionId(
+            @PathVariable UUID transactionId
+    ) {
+        return ResponseEntity.ok(documentService.getTransactionDocumentByTransactionId(transactionId));
     }
 
 }
