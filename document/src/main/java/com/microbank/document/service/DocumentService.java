@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface DocumentService {
 
     void createTransactionDocumentFromEvent(TransactionEvent event);
-    TransactionDocumentResponse getTransactionDocument(UUID documentId);
+    TransactionDocumentResponse getTransactionDocumentById(UUID documentId);
 
     TransactionDocumentResponse getTransactionDocumentByTransactionId(UUID transactionId);
 

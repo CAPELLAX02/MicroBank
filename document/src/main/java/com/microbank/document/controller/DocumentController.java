@@ -18,10 +18,10 @@ public class DocumentController {
     }
 
     @GetMapping("/{documentId}")
-    public ResponseEntity<TransactionDocumentResponse> getTransactionDocument(
+    public ResponseEntity<TransactionDocumentResponse> getTransactionDocumentById(
             @PathVariable UUID documentId
     ) {
-        return ResponseEntity.ok(documentService.getTransactionDocument(documentId));
+        return ResponseEntity.ok(documentService.getTransactionDocumentById(documentId));
     }
 
     @GetMapping("/transactions/{transactionId}")

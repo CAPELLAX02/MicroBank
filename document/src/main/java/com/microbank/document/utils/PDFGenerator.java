@@ -48,9 +48,13 @@ public class PDFGenerator {
 
             document.save(out);
             return new ByteArrayInputStream(out.toByteArray());
+
         } catch (Exception e) {
             throw new RuntimeException("Error while creating PDF", e);
         }
     }
 
+    public static ByteArrayInputStream generateTransactionThumbnail(TransactionEvent event) {
+        return null;
+    }
 }
