@@ -4,8 +4,10 @@ import com.microbank.document.dto.response.TransactionDocumentResponse;
 import com.microbank.document.response.BaseApiResponse;
 import com.microbank.document.service.DocumentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,9 +34,16 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.getTransactionDocumentByTransactionId(transactionId));
     }
 
-    // TODO: Add endpoint for admin users.
-    // TODO: Make the API responses of the document microservice generic as in the other microservices.
+    @GetMapping
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BaseApiResponse<List<TransactionDocumentResponse>>> getAllTransactionDocuments() {
+        return ResponseEntity.ok(documentService.getAllTransactionDocuments());
+    }
+
+    // TODO: Add endpoint for admin users and implement the RBAC also in the document microservice.
     // TODO: Implement the forgot-password and reset-password endpoints in the authentication microservice.
+    // TODO: Strengthen the user CRUD operations in the auth microservice. PostgreSQL and Keycloak must be consistent.
+
     // TODO: Clear the whole project codes up a bit.
     // TODO: Complete the API Documentation after all.
 

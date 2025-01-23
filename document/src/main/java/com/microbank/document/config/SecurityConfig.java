@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{documentId}").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{transactionId}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

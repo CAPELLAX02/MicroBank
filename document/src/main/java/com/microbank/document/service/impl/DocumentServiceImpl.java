@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -58,7 +59,6 @@ public class DocumentServiceImpl implements DocumentService {
     public BaseApiResponse<TransactionDocumentResponse> getTransactionDocumentById(UUID documentId) {
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found for ID: " + documentId));
-
         TransactionDocumentResponse transactionDocumentResponse = transactionDocumentResponseBuilder.buildTransactionDocumentResponse(document);
         return new BaseApiResponse<>(
                 HttpStatus.OK.value(),
@@ -71,14 +71,24 @@ public class DocumentServiceImpl implements DocumentService {
     public BaseApiResponse<TransactionDocumentResponse> getTransactionDocumentByTransactionId(UUID transactionId) {
         Document document = documentRepository.findByTransactionId(transactionId)
                 .orElseThrow(() -> new RuntimeException("Document not found for transaction ID: " + transactionId));
-
         TransactionDocumentResponse transactionDocumentResponse = transactionDocumentResponseBuilder.buildTransactionDocumentResponse(document);
-
         return new BaseApiResponse<>(
                 HttpStatus.OK.value(),
                 "Transaction document associated with the transaction with the ID: " + transactionId + " retrieved successfully.",
                 transactionDocumentResponse
         );
     }
+
+    @Override
+    public BaseApiResponse<List<TransactionDocumentResponse>> getAllTransactionDocuments() {
+        List<Document> documents = documentRepository.findAll();
+        List<TransactionDocumentResponse> transactionDocumentResponses = transactionDocumentResponseBuilder.buildTransactionDocumentResponses(documents);
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "All transaction documents retrieved successfully.",
+                transactionDocumentResponses
+        );
+    }
+
 
 }

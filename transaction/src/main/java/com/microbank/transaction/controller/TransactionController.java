@@ -5,7 +5,6 @@ import com.microbank.transaction.dto.response.TransactionResponse;
 import com.microbank.transaction.response.BaseApiResponse;
 import com.microbank.transaction.service.TransactionService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
