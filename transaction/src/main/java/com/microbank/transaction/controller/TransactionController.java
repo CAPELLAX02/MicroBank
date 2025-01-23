@@ -28,7 +28,9 @@ public class TransactionController {
     public ResponseEntity<BaseApiResponse<TransactionResponse>> createTransaction(
             @RequestBody @Valid CreateTransactionRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createTransaction(request));
+        return ResponseEntity
+                .status(transactionService.createTransaction(request).getStatus())
+                .body(transactionService.createTransaction(request));
     }
 
     @GetMapping("/me")

@@ -10,11 +10,14 @@ import com.microbank.transaction.exceptions.NotFoundException;
 import com.microbank.transaction.exceptions.UnauthorizedException;
 import com.microbank.transaction.feign.AccountServiceClient;
 import com.microbank.transaction.feign.AuthServiceClient;
+import com.microbank.transaction.feign.fallback.AccountServiceClientFallback;
 import com.microbank.transaction.model.Transaction;
 import com.microbank.transaction.repository.TransactionRepository;
 import com.microbank.transaction.response.BaseApiResponse;
 import com.microbank.transaction.service.TransactionService;
 import com.microbank.transaction.service.utils.TransactionResponseBuilder;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
@@ -29,26 +32,35 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionResponseBuilder transactionResponseBuilder;
+    private final RabbitTemplate rabbitTemplate;
     private final AccountServiceClient accountServiceClient;
     private final AuthServiceClient authServiceClient;
-    private final RabbitTemplate rabbitTemplate;
+    private final AccountServiceClientFallback accountServiceClientFallback;
 
     public TransactionServiceImpl(
             TransactionRepository transactionRepository,
-            AccountServiceClient accountServiceClient,
             TransactionResponseBuilder transactionResponseBuilder,
+            RabbitTemplate rabbitTemplate,
+            AccountServiceClient accountServiceClient,
             AuthServiceClient authServiceClient,
-            RabbitTemplate rabbitTemplate
+            AccountServiceClientFallback accountServiceClientFallback
     ) {
         this.transactionRepository = transactionRepository;
-        this.accountServiceClient = accountServiceClient;
         this.transactionResponseBuilder = transactionResponseBuilder;
-        this.authServiceClient = authServiceClient;
         this.rabbitTemplate = rabbitTemplate;
+        this.accountServiceClient = accountServiceClient;
+        this.authServiceClient = authServiceClient;
+        this.accountServiceClientFallback = accountServiceClientFallback;
+    }
+
+    private BaseApiResponse<AccountResponse> fallbackCreateTransaction(CreateTransactionRequest request, Throwable throwable) {
+        return accountServiceClientFallback.getCurrentUsersAccountById(request.senderAccountId());
     }
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "accountServiceClient", fallbackMethod = "fallbackCreateTransaction")
+    @Retry(name = "accountServiceClient")
     public BaseApiResponse<TransactionResponse> createTransaction(CreateTransactionRequest request) {
         var currentUser = authServiceClient.getCurrentUser();
         if (currentUser == null || currentUser.getData() == null) {
@@ -116,8 +128,6 @@ public class TransactionServiceImpl implements TransactionService {
         );
     }
 
-
-
     @Override
     public BaseApiResponse<List<TransactionResponse>> getCurrentUsersAllTransactions() {
         var currentUser = authServiceClient.getCurrentUser();
@@ -146,7 +156,6 @@ public class TransactionServiceImpl implements TransactionService {
         );
     }
 
-
     @Override
     public BaseApiResponse<TransactionResponse> getCurrentUsersTransactionById(UUID transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
@@ -173,7 +182,6 @@ public class TransactionServiceImpl implements TransactionService {
                 transactionResponse
         );
     }
-
 
     @Override
     public BaseApiResponse<List<TransactionResponse>> getCurrentUsersTransactionsByAccountId(UUID accountId) {
@@ -236,7 +244,6 @@ public class TransactionServiceImpl implements TransactionService {
                 transactionResponses
         );
     }
-
 
     @Override
     public BaseApiResponse<List<TransactionResponse>> getTransactionsByUserId(UUID userId) {

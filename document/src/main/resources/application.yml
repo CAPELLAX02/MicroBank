@@ -29,6 +29,7 @@ spring:
         jwt:
           issuer-uri: http://localhost:9098/realms/microbank
           jwk-set-uri: http://localhost:9098/realms/microbank/protocol/openid-connect/certs
+          
 
 minio:
   endpoint: http://localhost:9000

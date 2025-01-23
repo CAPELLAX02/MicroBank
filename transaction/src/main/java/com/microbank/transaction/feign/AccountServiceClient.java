@@ -3,6 +3,7 @@ package com.microbank.transaction.feign;
 import com.microbank.transaction.config.FeignConfig;
 import com.microbank.transaction.dto.request.UpdateBalanceRequest;
 import com.microbank.transaction.dto.response.AccountResponse;
+import com.microbank.transaction.feign.fallback.AccountServiceClientFallback;
 import com.microbank.transaction.response.BaseApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "account-service", url = "http://localhost:8082/api/v1/accounts", configuration = FeignConfig.class)
+@FeignClient(
+        name = "account-service",
+        url = "http://localhost:8082/api/v1/accounts",
+        configuration = FeignConfig.class,
+        fallback = AccountServiceClientFallback.class
+)
 public interface AccountServiceClient {
 
     @GetMapping
@@ -24,9 +30,6 @@ public interface AccountServiceClient {
 
     @GetMapping("/{accountId}")
     BaseApiResponse<AccountResponse> getCurrentUsersAccountById(@PathVariable("accountId") UUID accountId);
-
-    @GetMapping("/{accountId}/iban")
-    BaseApiResponse<String> getIbanByAccountId(@PathVariable("accountId") UUID accountId);
 
     @PutMapping("/balance")
     BaseApiResponse<AccountResponse> updateAccountBalance(@RequestBody UpdateBalanceRequest request);
