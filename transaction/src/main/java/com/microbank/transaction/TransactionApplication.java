@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.microbank.transaction.feign")
+@EnableFeignClients
 public class TransactionApplication {
 
 	public static void main(String[] args) {

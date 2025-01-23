@@ -4,10 +4,12 @@ import com.microbank.document.dto.event.TransactionEvent;
 import com.microbank.document.dto.response.TransactionDocumentResponse;
 import com.microbank.document.model.Document;
 import com.microbank.document.repository.DocumentRepository;
+import com.microbank.document.response.BaseApiResponse;
 import com.microbank.document.service.DocumentService;
 import com.microbank.document.service.MinIOService;
 import com.microbank.document.service.utils.TransactionDocumentResponseBuilder;
 import com.microbank.document.utils.PDFGenerator;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -53,19 +55,30 @@ public class DocumentServiceImpl implements DocumentService {
 
 
     @Override
-    public TransactionDocumentResponse getTransactionDocumentById(UUID documentId) {
+    public BaseApiResponse<TransactionDocumentResponse> getTransactionDocumentById(UUID documentId) {
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found for ID: " + documentId));
 
-        return transactionDocumentResponseBuilder.buildTransactionDocumentResponse(document);
+        TransactionDocumentResponse transactionDocumentResponse = transactionDocumentResponseBuilder.buildTransactionDocumentResponse(document);
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Transaction document with the ID: " + documentId + " retrieved successfully.",
+                transactionDocumentResponse
+        );
     }
 
     @Override
-    public TransactionDocumentResponse getTransactionDocumentByTransactionId(UUID transactionId) {
+    public BaseApiResponse<TransactionDocumentResponse> getTransactionDocumentByTransactionId(UUID transactionId) {
         Document document = documentRepository.findByTransactionId(transactionId)
                 .orElseThrow(() -> new RuntimeException("Document not found for transaction ID: " + transactionId));
 
-        return transactionDocumentResponseBuilder.buildTransactionDocumentResponse(document);
+        TransactionDocumentResponse transactionDocumentResponse = transactionDocumentResponseBuilder.buildTransactionDocumentResponse(document);
+
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Transaction document associated with the transaction with the ID: " + transactionId + " retrieved successfully.",
+                transactionDocumentResponse
+        );
     }
 
 }

@@ -15,8 +15,6 @@ import com.microbank.transaction.repository.TransactionRepository;
 import com.microbank.transaction.response.BaseApiResponse;
 import com.microbank.transaction.service.TransactionService;
 import com.microbank.transaction.service.utils.TransactionResponseBuilder;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.transaction.Transactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
@@ -49,50 +47,8 @@ public class TransactionServiceImpl implements TransactionService {
         this.authServiceClient = authServiceClient;
     }
 
-    private BaseApiResponse<?> fallbackCreateTransaction(CreateTransactionRequest request, Throwable throwable) {
-        return new BaseApiResponse<>(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                "Transaction process failed and has been rolled back. Account microservice is temporarily unavailable.",
-                null
-        );
-    }
-
-    private BaseApiResponse<?> fallbackGetCurrentUsersAllTransactions(Throwable throwable) {
-        return new BaseApiResponse<>(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                "Could not retrieve the transactions of the current user. Account microservice is temporarily unavailable.",
-                null
-        );
-    }
-
-    private BaseApiResponse<?> fallbackGetCurrentUsersTransactionById(UUID transactionId, Throwable throwable) {
-        return new BaseApiResponse<>(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                "Could not retrieve the current user's transactions with the ID: " + transactionId + " .Account microservice is temporarily unavailable.",
-                null
-        );
-    }
-
-    private BaseApiResponse<?> fallbackGetCurrentUsersTransactionsByAccountId(UUID accountId, Throwable throwable) {
-        return new BaseApiResponse<>(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                "Could not retrieve the transactions' information associated with the current user's account with ID: " + accountId + " .Account microservice is temporarily unavailable.",
-                null
-        );
-    }
-
-    private BaseApiResponse<?> fallbackGetTransactionsByUserId(UUID userId, Throwable throwable) {
-        return new BaseApiResponse<>(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                "Could not retrieve the transactions' information associated with the user with the ID: " + userId + ". Account microservice is temporarily unavailable.",
-                null
-        );
-    }
-
     @Override
     @Transactional
-    @CircuitBreaker(name = "accountServiceClient", fallbackMethod = "fallbackCreateTransaction")
-    @Retry(name = "accountServiceClient")
     public BaseApiResponse<TransactionResponse> createTransaction(CreateTransactionRequest request) {
         var currentUser = authServiceClient.getCurrentUser();
         if (currentUser == null || currentUser.getData() == null) {
@@ -161,8 +117,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @CircuitBreaker(name = "accountServiceClient", fallbackMethod = "fallbackGetCurrentUsersAllTransactions")
-    @Retry(name = "accountServiceClient")
     public BaseApiResponse<List<TransactionResponse>> getCurrentUsersAllTransactions() {
         var currentUser = authServiceClient.getCurrentUser();
         if (currentUser == null || currentUser.getData() == null) {
@@ -191,8 +145,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @CircuitBreaker(name = "accountServiceClient", fallbackMethod = "fallbackGetCurrentUsersTransactionById")
-    @Retry(name = "accountServiceClient")
     public BaseApiResponse<TransactionResponse> getCurrentUsersTransactionById(UUID transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new NotFoundException("Transaction with the ID: " + transactionId + " not found."));
@@ -220,8 +172,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @CircuitBreaker(name = "accountServiceClient", fallbackMethod = "fallbackGetCurrentUsersTransactionsByAccountId")
-    @Retry(name = "accountServiceClient")
     public BaseApiResponse<List<TransactionResponse>> getCurrentUsersTransactionsByAccountId(UUID accountId) {
         var accountResponse = accountServiceClient.getCurrentUsersAccountById(accountId);
         if (accountResponse == null || accountResponse.getData() == null) {
@@ -284,8 +234,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @CircuitBreaker(name = "accountServiceClient", fallbackMethod = "fallbackGetTransactionsByUserId")
-    @Retry(name = "accountServiceClient")
     public BaseApiResponse<List<TransactionResponse>> getTransactionsByUserId(UUID userId) {
         var accountsResponse = accountServiceClient.getAccountsByUserId(userId);
         if (accountsResponse == null || accountsResponse.getData() == null || accountsResponse.getData().isEmpty()) {
