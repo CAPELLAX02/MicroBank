@@ -3,7 +3,6 @@ package com.microbank.transaction.feign;
 import com.microbank.transaction.config.FeignConfig;
 import com.microbank.transaction.dto.request.UpdateBalanceRequest;
 import com.microbank.transaction.dto.response.AccountResponse;
-import com.microbank.transaction.feign.fallback.AccountServiceClientFallback;
 import com.microbank.transaction.response.BaseApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +16,7 @@ import java.util.UUID;
 @FeignClient(
         name = "account-service",
         url = "http://localhost:8082/api/v1/accounts",
-        configuration = FeignConfig.class,
-        fallback = AccountServiceClientFallback.class
+        configuration = FeignConfig.class
 )
 public interface AccountServiceClient {
 
