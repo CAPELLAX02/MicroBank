@@ -1,5 +1,6 @@
 package com.microbank.document.service.impl;
 
+import com.microbank.document.exception.CustomException;
 import com.microbank.document.service.MinIOService;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
@@ -43,7 +44,7 @@ public class MinIOServiceImpl implements MinIOService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Error while uploading file to MinIO: ", e);
+            throw new CustomException("Error while uploading file to MinIO");
         }
     }
 }

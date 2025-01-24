@@ -144,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
                     Duration.ofMinutes(10));
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error saving user data to Redis", e);
+            throw new CustomException("Error saving user data to Redis");
         }
     }
 
@@ -194,7 +194,7 @@ public class AuthServiceImpl implements AuthService {
 
             Response response = usersResource.create(user);
             if (response.getStatus() != 201) {
-                throw new RuntimeException("Failed to create user in Keycloak. Status: " + response.getStatus());
+                throw new CustomException("Failed to create user in Keycloak. Status: " + response.getStatus());
             }
 
             String locationHeader = response.getHeaderString("Location");

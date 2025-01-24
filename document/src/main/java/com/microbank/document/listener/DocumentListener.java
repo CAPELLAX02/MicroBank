@@ -2,6 +2,7 @@ package com.microbank.document.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microbank.document.dto.event.TransactionEvent;
+import com.microbank.document.exception.CustomException;
 import com.microbank.document.service.DocumentService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class DocumentListener {
             documentService.createTransactionDocumentFromEvent(event);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error while processing transaction message", e);
+            throw new CustomException("Error while processing transaction message");
         }
     }
 
