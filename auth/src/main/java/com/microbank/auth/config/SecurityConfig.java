@@ -32,6 +32,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,  "/api/v1/auth/activate").permitAll()
                         .requestMatchers(HttpMethod.POST,  "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST,  "/api/v1/auth/refresh-token").permitAll()
+                        .requestMatchers(HttpMethod.POST,  "/api/v1/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/auth/reset-password").permitAll()
 
                         .requestMatchers(HttpMethod.GET,   "/api/v1/auth/admin/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,   "/api/v1/auth/admin/users/{userId}").hasRole("ADMIN")

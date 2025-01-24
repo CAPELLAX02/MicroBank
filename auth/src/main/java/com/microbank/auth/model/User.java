@@ -39,7 +39,7 @@ public class User {
     private boolean activated = false;
 
     @Column
-    private String activationCode;
+    private String activationCode; // TODO: Maybe get rid of this column
 
     @Column(nullable = false)
     private boolean isBanned = false;

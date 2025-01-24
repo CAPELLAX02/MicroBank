@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
+import com.microbank.auth.exception.CustomException;
 import com.microbank.auth.exception.NotFoundException;
 import com.microbank.auth.exception.UnauthorizedException;
 import com.microbank.auth.model.User;
@@ -127,8 +128,7 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-    @Override
-    public void saveUserToRedis(RegisterRequest request, String activationCode) {
+    private void saveUserToRedis(RegisterRequest request, String activationCode) {
         try {
             Map<String, Object> userData = new HashMap<>();
             userData.put("id", UUID.randomUUID().toString());
@@ -148,8 +148,11 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    @Override
-    public String generateActivationCode() {
+    private String generateActivationCode() {
+        return String.format("%06d", new Random().nextInt(999999));
+    }
+
+    private String generatePasswordRecoveryCode() {
         return String.format("%06d", new Random().nextInt(999999));
     }
 
@@ -304,6 +307,115 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public BaseApiResponse<String> forgotPassword(ForgotPasswordRequest request) {
+        String normalizedEmail = request.email().trim().toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new NotFoundException("User with email " + request.email() + " not found"));
+
+        String passwordRecoveryCode = generatePasswordRecoveryCode();
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("id", user.getId().toString());
+        userData.put("email", normalizedEmail);
+        userData.put("passwordRecoveryCode", passwordRecoveryCode);
+
+        String redisKey = "forgot-password:" + normalizedEmail;
+        try {
+            redisTemplate.opsForValue().set(
+                    redisKey,
+                    objectMapper.writeValueAsString(userData),
+                    Duration.ofMinutes(15)
+            );
+
+        } catch (JsonProcessingException e) {
+            throw new CustomException("Error saving recovery data to Redis");
+        }
+
+        Map<String, String> message = new HashMap<>();
+        message.put("email", normalizedEmail);
+        message.put("passwordRecoveryCode", passwordRecoveryCode);
+
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            rabbitTemplate.convertAndSend("password-recovery-queue", jsonMessage);
+
+        } catch (Exception e) {
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "An error occurred while sending password recovery message.",
+                    null
+            );
+        }
+
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Password recovery code sent to " + request.email(),
+                null
+        );
+    }
+
+
+    @Override
+    public BaseApiResponse<UserResponse> resetPassword(ResetPasswordRequest request) {
+        String redisKey = "forgot-password:" + request.email().trim().toLowerCase();
+        String userDataJson = redisTemplate.opsForValue().get(redisKey);
+
+        if (userDataJson == null) {
+            throw new CustomException("Invalid or expired password recovery code.");
+        }
+
+        try {
+            Map<String, Object> userData = objectMapper.readValue(userDataJson, new TypeReference<>() {});
+            String storedCode = (String) userData.get("passwordRecoveryCode");
+
+            if (storedCode == null || !storedCode.trim().equals(request.passwordRecoveryCode().trim())) {
+                throw new CustomException("Invalid or expired password recovery code.");
+            }
+
+            UUID userId = UUID.fromString((String) userData.get("id"));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+
+            UsersResource usersResource = keycloak.realm("microbank").users();
+            usersResource.get(user.getKeycloakId()).resetPassword(createCredentialRepresentation(request.newPassword()));
+            usersResource.get(user.getKeycloakId()).logout();
+
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+            userRepository.save(user);
+
+            new Thread(() -> redisTemplate.delete(redisKey)).start();
+
+            UserResponse userResponse = userServiceUtils.buildUserResponse(user);
+            return new BaseApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Password reset successfully. You can log back into the system.",
+                    userResponse
+            );
+
+        } catch (JsonProcessingException e) {
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error processing recovery data from Redis: " + e.getMessage(),
+                    null
+            );
+        } catch (Exception e) {
+            return new BaseApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "An unexpected error occurred while resetting the password: " + e.getMessage(),
+                    null
+            );
+        }
+    }
+
+    private CredentialRepresentation createCredentialRepresentation(String newPassword) {
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(newPassword);
+        credential.setTemporary(false);
+        return credential;
+    }
+
+    @Override
     public BaseApiResponse<UserResponse> getUserById(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -315,8 +427,7 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-    @Override
-    public UserResponse getUserByKeycloakId(String keycloakId) {
+    private UserResponse getUserByKeycloakId(String keycloakId) {
         User user = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new RuntimeException("User not found with Keycloak ID: " + keycloakId));
 

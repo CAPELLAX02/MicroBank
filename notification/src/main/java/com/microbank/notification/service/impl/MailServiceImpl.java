@@ -84,6 +84,22 @@ public class MailServiceImpl implements MailService {
         mailSender.send(message);
     }
 
+    @Override
+    public void sendPasswordRecoveryMail(String to, String passwordRecoveryCode) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
+        Context context = new Context();
+        context.setVariable("passwordRecoveryCode", passwordRecoveryCode);
+
+        String content = templateEngine.process("password-recovery-email", context);
+
+        helper.setFrom(senderEmail);
+        helper.setTo(to);
+        helper.setSubject("Password Recovery Code");
+        helper.setText(content, true);
+
+        mailSender.send(message);
+    }
 
 }

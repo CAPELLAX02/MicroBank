@@ -1,5 +1,6 @@
 package com.microbank.auth.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.microbank.auth.dto.request.*;
 import com.microbank.auth.dto.response.UserResponse;
 import com.microbank.auth.response.BaseApiResponse;
@@ -52,6 +53,20 @@ public class AuthController {
             @RequestBody @Valid RefreshTokenRequest request
     ) {
         return ResponseEntity.ok(authService.refreshToken(request));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<BaseApiResponse<String>> forgotPassword(
+            @RequestBody @Valid ForgotPasswordRequest request
+    ) {
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<BaseApiResponse<UserResponse>> resetPassword(
+            @RequestBody @Valid ResetPasswordRequest request
+    ) throws JsonProcessingException {
+        return ResponseEntity.status(authService.resetPassword(request).getStatus()).body(authService.resetPassword(request));
     }
 
     @GetMapping("/users/me")

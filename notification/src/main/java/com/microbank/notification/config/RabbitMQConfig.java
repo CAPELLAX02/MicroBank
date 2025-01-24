@@ -12,7 +12,10 @@ public class RabbitMQConfig {
         return new Queue("activation-queue", true);
     }
 
-    // TODO: Implement "reset-password-queue".
+    @Bean
+    public Queue passwordRecoveryQueue() {
+        return new Queue("password-recovery-queue", true);
+    }
 
     @Bean
     public Queue transactionQueue() {

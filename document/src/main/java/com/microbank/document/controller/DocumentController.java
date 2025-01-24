@@ -4,8 +4,10 @@ import com.microbank.document.dto.response.TransactionDocumentResponse;
 import com.microbank.document.response.BaseApiResponse;
 import com.microbank.document.service.DocumentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +45,8 @@ public class DocumentController {
     // TODO: Add endpoint for admin users and implement the RBAC also in the document microservice.
     // TODO: Implement the forgot-password and reset-password endpoints in the authentication microservice.
     // TODO: Strengthen the user CRUD operations in the auth microservice. PostgreSQL and Keycloak must be consistent.
+
+    // TODO: Somehow implement IBAN <-> accountId conversion due to client convenience
 
     // TODO: Clear the whole project codes up a bit.
     // TODO: Complete the API Documentation after all.

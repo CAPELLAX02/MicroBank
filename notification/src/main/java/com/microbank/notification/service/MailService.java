@@ -27,4 +27,8 @@ public interface MailService {
             LocalDateTime timestamp
     ) throws MessagingException;
 
+    void sendPasswordRecoveryMail(
+            String to,
+            String passwordRecoveryCode
+    ) throws MessagingException;
 }
