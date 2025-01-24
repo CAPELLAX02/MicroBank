@@ -37,7 +37,3 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
 
-logging:
-  level:
-    com.microbank.account: debug
-    root: info

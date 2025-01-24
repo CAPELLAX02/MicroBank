@@ -11,8 +11,3 @@ eureka:
     fetch-registry: false
   server:
     enable-self-preservation: true
-
-logging:
-  level:
-    com.netflix.eureka: DEBUG
-    com.netflix.discovery: DEBUG

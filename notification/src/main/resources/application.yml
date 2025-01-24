@@ -32,8 +32,3 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
-
-logging:
-  level:
-    org.springframework.amqp: debug
-    org.springframework.messaging: debug
