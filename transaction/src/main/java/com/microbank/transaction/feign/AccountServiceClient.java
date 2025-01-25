@@ -26,6 +26,9 @@ public interface AccountServiceClient {
     @GetMapping("/admin/accounts/{accountId}")
     BaseApiResponse<AccountResponse> getAccountById(@PathVariable("accountId") UUID accountId);
 
+    @GetMapping("/iban/{iban}")
+    BaseApiResponse<AccountResponse> getAccountByIban(@PathVariable("iban") String iban);
+
     @GetMapping("/{accountId}")
     BaseApiResponse<AccountResponse> getCurrentUsersAccountById(@PathVariable("accountId") UUID accountId);
 

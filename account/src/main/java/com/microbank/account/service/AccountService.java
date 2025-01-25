@@ -18,6 +18,7 @@ public interface AccountService {
     BaseApiResponse<String> deleteOwnAccount(UUID accountId);
 
     BaseApiResponse<String> getIbanByAccountId(UUID accountId);
+    BaseApiResponse<AccountResponse> getAccountByIban(String iban);
 
     BaseApiResponse<List<AccountResponse>> getAllAccounts();
     BaseApiResponse<List<AccountResponse>> getAccountsByUserId(UUID userId);

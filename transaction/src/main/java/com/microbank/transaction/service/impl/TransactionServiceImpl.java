@@ -50,6 +50,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public BaseApiResponse<TransactionResponse> createTransaction(CreateTransactionRequest request) {
+        request.validate();
+
         var currentUser = authServiceClient.getCurrentUser();
         if (currentUser == null || currentUser.getData() == null) {
             throw new UnauthorizedException("User not authenticated.");
@@ -60,16 +62,22 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UnauthorizedException("Source account does not belong to the current user.");
         }
 
-        var sourceAccount = accountServiceClient.getAccountById(request.senderAccountId()).getData();
-        var receiverAccount = accountServiceClient.getAccountById(request.receiverAccountId()).getData();
+        AccountResponse senderAccount = accountServiceClient.getAccountById(request.senderAccountId()).getData();
+        AccountResponse receiverAccount;
 
-        if (sourceAccount.balance().compareTo(request.amount()) < 0) {
+        if (request.receiverAccountId() != null) {
+            receiverAccount = accountServiceClient.getAccountById(request.receiverAccountId()).getData();
+        } else {
+            receiverAccount = accountServiceClient.getAccountByIban(request.receiverAccountIban()).getData();
+        }
+
+        if (senderAccount.balance().compareTo(request.amount()) < 0) {
             throw new CustomException("Insufficient balance.");
         }
 
         accountServiceClient.updateAccountBalance(
                 new UpdateBalanceRequest(
-                        request.senderAccountId(),
+                        senderAccount.id(),
                         request.amount(),
                         false
                 )
@@ -77,15 +85,15 @@ public class TransactionServiceImpl implements TransactionService {
 
         accountServiceClient.updateAccountBalance(
                 new UpdateBalanceRequest(
-                        request.receiverAccountId(),
+                        receiverAccount.id(),
                         request.amount(),
                         true
                 )
         );
 
         Transaction transaction = new Transaction();
-        transaction.setSenderAccountId(request.senderAccountId());
-        transaction.setReceiverAccountId(request.receiverAccountId());
+        transaction.setSenderAccountId(senderAccount.id());
+        transaction.setReceiverAccountId(receiverAccount.id());
         transaction.setAmount(request.amount());
         transaction.setTimestamp(LocalDateTime.now());
         transaction.setDescription(request.description());
@@ -95,11 +103,11 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.getId(),
                 transaction.getSenderAccountId(),
                 transaction.getReceiverAccountId(),
-                sourceAccount.ownerEmail(),
+                senderAccount.ownerEmail(),
                 receiverAccount.ownerEmail(),
-                sourceAccount.IBAN(),
+                senderAccount.IBAN(),
                 receiverAccount.IBAN(),
-                sourceAccount.ownerName(),
+                senderAccount.ownerName(),
                 receiverAccount.ownerName(),
                 transaction.getAmount(),
                 transaction.getDescription(),

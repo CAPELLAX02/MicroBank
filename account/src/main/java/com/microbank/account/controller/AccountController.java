@@ -109,5 +109,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.deleteAccount(accountId));
     }
 
+    @GetMapping("/iban/{iban}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<BaseApiResponse<AccountResponse>> getAccountByIban(
+            @PathVariable String iban
+    ) {
+        return ResponseEntity.ok(accountService.getAccountByIban(iban));
+    }
 
 }

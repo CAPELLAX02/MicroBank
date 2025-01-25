@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,  "/api/v1/accounts/balance").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/{accountId}").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/minimal/{accountId}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/iban/{iban}").hasRole("USER")
                         .requestMatchers(HttpMethod.GET,  "/api/v1/accounts/admin/users/{userId}").hasRole("ADMIN")
 
                         .anyRequest().authenticated()

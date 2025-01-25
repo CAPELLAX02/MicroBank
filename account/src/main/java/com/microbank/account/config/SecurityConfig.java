@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/{accountId}").hasRole("USER")
 
                         .requestMatchers(HttpMethod.GET,    "/api/v1/accounts/{accountId}/iban").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET,    "/api/v1/accounts/iban/{iban}").hasRole("USER")
 
                         .requestMatchers(HttpMethod.GET,    "/api/v1/admin/accounts").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,    "/api/v1/admin/accounts/{accountId}").hasRole("ADMIN")

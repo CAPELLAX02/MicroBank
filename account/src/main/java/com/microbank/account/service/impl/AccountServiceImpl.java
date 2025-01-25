@@ -132,6 +132,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public BaseApiResponse<AccountResponse> getAccountByIban(String iban) {
+        Account account = accountRepository.findByIBAN(iban)
+                .orElseThrow(() -> new NotFoundException("Account not found with IBAN: " + iban));
+        AccountResponse response = accountResponseBuilder.buildAccountResponse(account);
+        return new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                "Account with the IBAN: " + iban + " retrieved successfully.",
+                response
+        );
+    }
+
+    @Override
     public BaseApiResponse<AccountResponse> getCurrentUsersAccountById(UUID accountId) {
         var user = authServiceClient.getCurrentUser();
 
