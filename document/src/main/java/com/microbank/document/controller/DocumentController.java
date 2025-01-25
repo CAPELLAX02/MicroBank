@@ -43,7 +43,6 @@ public class DocumentController {
     }
 
     // TODO: Add endpoint for admin users and implement the RBAC also in the document microservice.
-    // TODO: Implement the forgot-password and reset-password endpoints in the authentication microservice.
     // TODO: Strengthen the user CRUD operations in the auth microservice. PostgreSQL and Keycloak must be consistent.
 
     // TODO: Somehow implement IBAN <-> accountId conversion due to client convenience
