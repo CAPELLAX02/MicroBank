@@ -38,7 +38,8 @@ public class DocumentController {
 
     @GetMapping
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<List<TransactionDocumentResponse>>> getAllTransactionDocuments() {
+    public ResponseEntity<BaseApiResponse<List<TransactionDocumentResponse>>> getAllTransactionDocuments(
+    ) {
         return ResponseEntity.ok(documentService.getAllTransactionDocuments());
     }
 
