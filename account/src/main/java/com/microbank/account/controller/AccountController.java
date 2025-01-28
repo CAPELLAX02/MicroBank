@@ -24,6 +24,11 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test response is successful.");
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseApiResponse<AccountResponse>> createAccount(

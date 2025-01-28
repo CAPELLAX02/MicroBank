@@ -27,6 +27,11 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test response is successful.");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<BaseApiResponse<String>> registerUser(
             @RequestBody @Valid RegisterRequest request

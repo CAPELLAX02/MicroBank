@@ -22,6 +22,11 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test response is successful.");
+    }
+
     @GetMapping("/{documentId}")
     public ResponseEntity<BaseApiResponse<TransactionDocumentResponse>> getTransactionDocumentById(
             @PathVariable UUID documentId
@@ -45,9 +50,6 @@ public class DocumentController {
 
     // TODO: Add endpoint for admin users and implement the RBAC also in the document microservice.
     // TODO: Strengthen the user CRUD operations in the auth microservice. PostgreSQL and Keycloak must be consistent.
-
-    // TODO: Somehow implement IBAN <-> accountId conversion due to client convenience
-
     // TODO: Clear the whole project codes up a bit.
     // TODO: Complete the API Documentation after all.
 
