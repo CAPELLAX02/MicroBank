@@ -27,97 +27,82 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Test response is successful.");
-    }
-
     @PostMapping("/register")
-    public ResponseEntity<BaseApiResponse<String>> registerUser(
-            @RequestBody @Valid RegisterRequest request
-    ) {
-        return ResponseEntity.status(201).body(authService.registerUser(request));
+    public ResponseEntity<BaseApiResponse<String>> registerUser(@RequestBody @Valid RegisterRequest request) {
+        BaseApiResponse<String> response = authService.registerUser(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/activate")
-    public ResponseEntity<BaseApiResponse<String>> activateUser(
-            @RequestBody @Valid ActivationRequest request
-    ) {
-        return ResponseEntity.ok(authService.activateUser(request));
+    public ResponseEntity<BaseApiResponse<String>> activateUser(@RequestBody @Valid ActivationRequest request) {
+        BaseApiResponse<String> response = authService.activateUser(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseApiResponse<Map<String, Object>>> loginUser(
-            @RequestBody @Valid LoginRequest loginRequest
-    ) {
-        return ResponseEntity.ok(authService.loginUser(loginRequest));
+    public ResponseEntity<BaseApiResponse<Map<String, Object>>> loginUser(@RequestBody @Valid LoginRequest request) {
+        BaseApiResponse<Map<String, Object>> response = authService.loginUser(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping(value = "/refresh-token", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BaseApiResponse<Map<String, Object>>> refreshToken(
-            @RequestBody @Valid RefreshTokenRequest request
-    ) {
-        return ResponseEntity.ok(authService.refreshToken(request));
+    public ResponseEntity<BaseApiResponse<Map<String, Object>>> refreshToken(@RequestBody @Valid RefreshTokenRequest request) {
+        BaseApiResponse<Map<String, Object>> response = authService.refreshToken(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<BaseApiResponse<String>> forgotPassword(
-            @RequestBody @Valid ForgotPasswordRequest request
-    ) {
-        return ResponseEntity.ok(authService.forgotPassword(request));
+    public ResponseEntity<BaseApiResponse<String>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+        BaseApiResponse<String> response = authService.forgotPassword(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<BaseApiResponse<UserResponse>> resetPassword(
-            @RequestBody @Valid ResetPasswordRequest request
-    ) throws JsonProcessingException {
-        return ResponseEntity.status(authService.resetPassword(request).getStatus()).body(authService.resetPassword(request));
+    public ResponseEntity<BaseApiResponse<UserResponse>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) throws JsonProcessingException {
+        BaseApiResponse<UserResponse> response = authService.resetPassword(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/users/me")
-    public ResponseEntity<BaseApiResponse<UserResponse>> getCurrentUsersProfile(
-            @AuthenticationPrincipal Jwt jwt
-    ) {
+    public ResponseEntity<BaseApiResponse<UserResponse>> getCurrentUsersProfile(@AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getClaimAsString("sub");
-        return ResponseEntity.ok(authService.getCurrentUser(keycloakId));
+        BaseApiResponse<UserResponse> response = authService.getCurrentUser(keycloakId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<UserResponse>> getUserById(
-            @Valid @PathVariable UUID userId
-    ) {
-        return ResponseEntity.ok(authService.getUserById(userId));
+    public ResponseEntity<BaseApiResponse<UserResponse>> getUserById(@Valid @PathVariable UUID userId) {
+        BaseApiResponse<UserResponse> response = authService.getUserById(userId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseApiResponse<List<UserResponse>>> getAllUsers() {
-        return ResponseEntity.ok(authService.getAllUsers());
+        BaseApiResponse<List<UserResponse>> response = authService.getAllUsers();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping("/admin/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<String>> deleteUserById(
-            @PathVariable UUID userId
-    ) {
-        return ResponseEntity.ok(authService.deleteUser(userId));
+    public ResponseEntity<BaseApiResponse<String>> deleteUserById(@PathVariable UUID userId) {
+        BaseApiResponse<String> response = authService.deleteUser(userId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PatchMapping("/admin/users/role")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<UserResponse>> updateUserRole(
-            @RequestBody @Valid UpdateRoleRequest request
-    ) {
-        return ResponseEntity.ok(authService.updateUserRole(request));
+    public ResponseEntity<BaseApiResponse<UserResponse>> updateUserRole(@RequestBody @Valid UpdateRoleRequest request) {
+        BaseApiResponse<UserResponse> response = authService.updateUserRole(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PatchMapping("/admin/users/access")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<UserResponse>> updateUserAccess(
-            @RequestBody @Valid UpdateAccessRequest request
-    ) {
-        return ResponseEntity.ok(authService.updateUserAccess(request));
+    public ResponseEntity<BaseApiResponse<UserResponse>> updateUserAccess(@RequestBody @Valid UpdateAccessRequest request) {
+        BaseApiResponse<UserResponse> response = authService.updateUserAccess(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 }

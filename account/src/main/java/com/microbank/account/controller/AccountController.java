@@ -24,102 +24,88 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Test response is successful.");
-    }
-
     @PostMapping
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<AccountResponse>> createAccount(
-            @RequestBody @Valid CreateAccountRequest request
-    ) {
-        return ResponseEntity.ok(accountService.createAccount(request));
+    public ResponseEntity<BaseApiResponse<AccountResponse>> createAccount(@RequestBody @Valid CreateAccountRequest request) {
+        BaseApiResponse<AccountResponse> response = accountService.createAccount(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping("/balance")
-//    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<AccountResponse>> updateAccountBalance(
-            @RequestBody UpdateBalanceRequest request
-    ) {
-        return ResponseEntity.ok(accountService.updateAccountBalance(request));
+    public ResponseEntity<BaseApiResponse<AccountResponse>> updateAccountBalance(@RequestBody UpdateBalanceRequest request) {
+        BaseApiResponse<AccountResponse> response = accountService.updateAccountBalance(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseApiResponse<List<AccountResponse>>> getCurrentUsersAccounts() {
-        return ResponseEntity.ok(accountService.getCurrentUsersAccounts());
+        BaseApiResponse<List<AccountResponse>> response = accountService.getCurrentUsersAccounts();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/{accountId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<AccountResponse>> getCurrentUsersAccountById(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(accountService.getCurrentUsersAccountById(accountId));
+    public ResponseEntity<BaseApiResponse<AccountResponse>> getCurrentUsersAccountById(@PathVariable UUID accountId) {
+        BaseApiResponse<AccountResponse> response = accountService.getCurrentUsersAccountById(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/{accountId}/iban")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<String>> getMinimalAccountInfo(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(accountService.getIbanByAccountId(accountId));
+    public ResponseEntity<BaseApiResponse<String>> getIbanByAccountId(@PathVariable UUID accountId) {
+        BaseApiResponse<String> response = accountService.getIbanByAccountId(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 
     @DeleteMapping("/{accountId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<String>> deleteOwnAccount(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(accountService.deleteOwnAccount(accountId));
+    public ResponseEntity<BaseApiResponse<String>> deleteOwnAccount(@PathVariable UUID accountId) {
+        BaseApiResponse<String> response = accountService.deleteOwnAccount(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/accounts")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseApiResponse<List<AccountResponse>>> getAllAccounts() {
-        return ResponseEntity.ok(accountService.getAllAccounts());
+        BaseApiResponse<List<AccountResponse>> response = accountService.getAllAccounts();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/accounts/{accountId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<AccountResponse>> getAccountById(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(accountService.getAccountById(accountId));
+    public ResponseEntity<BaseApiResponse<AccountResponse>> getAccountById(@PathVariable UUID accountId) {
+        BaseApiResponse<AccountResponse> response = accountService.getAccountById(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/users/{userId}/accounts")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<List<AccountResponse>>> getAccountsByUserId(
-            @PathVariable UUID userId
-    ) {
-        return ResponseEntity.ok(accountService.getAccountsByUserId(userId));
+    public ResponseEntity<BaseApiResponse<List<AccountResponse>>> getAccountsByUserId(@PathVariable UUID userId) {
+        BaseApiResponse<List<AccountResponse>> response = accountService.getAccountsByUserId(userId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PatchMapping("/admin/accounts/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<AccountResponse>> updateAccountStatus(
-            @RequestBody UpdateAccountStatusRequest request
-    ) {
-        return ResponseEntity.ok(accountService.updateAccountStatus(request));
+    public ResponseEntity<BaseApiResponse<AccountResponse>> updateAccountStatus(@RequestBody UpdateAccountStatusRequest request) {
+        BaseApiResponse<AccountResponse> response = accountService.updateAccountStatus(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping("/admin/accounts/{accountId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<String>> deleteAccount(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(accountService.deleteAccount(accountId));
+    public ResponseEntity<BaseApiResponse<String>> deleteAccount(@PathVariable UUID accountId) {
+        BaseApiResponse<String> response = accountService.deleteAccount(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/iban/{iban}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<AccountResponse>> getAccountByIban(
-            @PathVariable String iban
-    ) {
-        return ResponseEntity.ok(accountService.getAccountByIban(iban));
+    public ResponseEntity<BaseApiResponse<AccountResponse>> getAccountByIban(@PathVariable String iban) {
+        BaseApiResponse<AccountResponse> response = accountService.getAccountByIban(iban);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 }

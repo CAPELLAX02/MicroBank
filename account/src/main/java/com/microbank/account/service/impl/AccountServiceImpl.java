@@ -84,6 +84,10 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(request.accountId())
                 .orElseThrow(() -> new NotFoundException("Account not found with ID: " + request.accountId()));
 
+        if (account.isBlocked()) {
+            throw new CustomException("This account is blocked.");
+        }
+
         BigDecimal newBalance = request.isDeposit()
                 ? account.getBalance().add(request.amount())
                 : account.getBalance().subtract(request.amount());

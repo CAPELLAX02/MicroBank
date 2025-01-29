@@ -22,72 +22,60 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Test response is successful.");
-    }
-
     @PostMapping
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<TransactionResponse>> createTransaction(
-            @RequestBody @Valid CreateTransactionRequest request
-    ) {
-        return ResponseEntity
-                .status(transactionService.createTransaction(request).getStatus())
-                .body(transactionService.createTransaction(request));
+    public ResponseEntity<BaseApiResponse<TransactionResponse>> createTransaction(@RequestBody @Valid CreateTransactionRequest request) {
+        BaseApiResponse<TransactionResponse> response = transactionService.createTransaction(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getCurrentUsersAllTransactions() {
-        return ResponseEntity.ok(transactionService.getCurrentUsersAllTransactions());
+        BaseApiResponse<List<TransactionResponse>> response = transactionService.getCurrentUsersAllTransactions();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/me/{transactionId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<TransactionResponse>> getCurrentUsersTransactionById(
-            @PathVariable UUID transactionId
-    ) {
-        return ResponseEntity.ok(transactionService.getCurrentUsersTransactionById(transactionId));
+    public ResponseEntity<BaseApiResponse<TransactionResponse>> getCurrentUsersTransactionById(@PathVariable UUID transactionId) {
+        BaseApiResponse<TransactionResponse> response = transactionService.getCurrentUsersTransactionById(transactionId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/me/accounts/{accountId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getCurrentUsersTransactionsByAccountId(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(transactionService.getCurrentUsersTransactionsByAccountId(accountId));
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getCurrentUsersTransactionsByAccountId(@PathVariable UUID accountId) {
+        BaseApiResponse<List<TransactionResponse>> response = transactionService.getCurrentUsersTransactionsByAccountId(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
-
 
     @GetMapping("/admin/transactions")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getAllTransactions() {
-        return ResponseEntity.ok(transactionService.getAllTransactions());
+        BaseApiResponse<List<TransactionResponse>> response = transactionService.getAllTransactions();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/transactions/{transactionId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<TransactionResponse>> getTransactionById(
-            @PathVariable UUID transactionId
-    ) {
-        return ResponseEntity.ok(transactionService.getTransactionById(transactionId));
+    public ResponseEntity<BaseApiResponse<TransactionResponse>> getTransactionById(@PathVariable UUID transactionId) {
+        BaseApiResponse<TransactionResponse> response = transactionService.getTransactionById(transactionId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/accounts/{accountId}/transactions")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getTransactionsByAccountId(
-            @PathVariable UUID accountId
-    ) {
-        return ResponseEntity.ok(transactionService.getTransactionsByAccountId(accountId));
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getTransactionsByAccountId(@PathVariable UUID accountId) {
+        BaseApiResponse<List<TransactionResponse>> response = transactionService.getTransactionsByAccountId(accountId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/users/{userId}/transactions")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getTransactionsByUserId(
-            @PathVariable UUID userId
-    ) {
-        return ResponseEntity.ok(transactionService.getTransactionsByUserId(userId));
+    public ResponseEntity<BaseApiResponse<List<TransactionResponse>>> getTransactionsByUserId(@PathVariable UUID userId) {
+        BaseApiResponse<List<TransactionResponse>> response = transactionService.getTransactionsByUserId(userId);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 }

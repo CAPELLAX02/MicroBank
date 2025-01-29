@@ -22,35 +22,19 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Test response is successful.");
-    }
-
     @GetMapping("/{documentId}")
-    public ResponseEntity<BaseApiResponse<TransactionDocumentResponse>> getTransactionDocumentById(
-            @PathVariable UUID documentId
-    ) {
+    public ResponseEntity<BaseApiResponse<TransactionDocumentResponse>> getTransactionDocumentById(@PathVariable UUID documentId) {
         return ResponseEntity.ok(documentService.getTransactionDocumentById(documentId));
     }
 
     @GetMapping("/transactions/{transactionId}")
-    public ResponseEntity<BaseApiResponse<TransactionDocumentResponse>> getTransactionDocumentByTransactionId(
-            @PathVariable UUID transactionId
-    ) {
+    public ResponseEntity<BaseApiResponse<TransactionDocumentResponse>> getTransactionDocumentByTransactionId(@PathVariable UUID transactionId) {
         return ResponseEntity.ok(documentService.getTransactionDocumentByTransactionId(transactionId));
     }
 
     @GetMapping
-//    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseApiResponse<List<TransactionDocumentResponse>>> getAllTransactionDocuments(
-    ) {
+    public ResponseEntity<BaseApiResponse<List<TransactionDocumentResponse>>> getAllTransactionDocuments() {
         return ResponseEntity.ok(documentService.getAllTransactionDocuments());
     }
-
-    // TODO: Add endpoint for admin users and implement the RBAC also in the document microservice.
-    // TODO: Strengthen the user CRUD operations in the auth microservice. PostgreSQL and Keycloak must be consistent.
-    // TODO: Clear the whole project codes up a bit.
-    // TODO: Complete the API Documentation after all.
 
 }

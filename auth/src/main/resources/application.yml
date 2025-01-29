@@ -44,7 +44,7 @@ keycloak:
     token-url: "http://localhost:9098/realms/microbank/protocol/openid-connect/token"
     grant-type: "password"
     client-id: "microbank-client"
-    client-secret: "2MOMXVZBGszSBRkFqQXD9paqCDTWf9ha"
+    client-secret: "GGMykhfp8KjkRjxwG1uKANH0DJjFeeUc"
   refresh-token:
     grant-type: "refresh-token"
   config:
@@ -53,7 +53,7 @@ keycloak:
     username: "admin"
     password: "admin"
     client-id: "admin-cli"
-    client-secret: "TNoAD5H9f4PFuMkiMJOd6iDsq4zt42vY"
+    client-secret: "LFuoFSydViE0QCWskyMlOtkIn3ip27FU"
 
 eureka:
   client:

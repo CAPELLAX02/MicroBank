@@ -258,6 +258,8 @@ public class AuthServiceImpl implements AuthService {
                     new ParameterizedTypeReference<>() {}
             );
 
+            // TODO: "Banned" users cannot login logic goes here later on
+
             return new BaseApiResponse<>(HttpStatus.OK.value(), "Login successful.", response.getBody());
 
         } catch (HttpClientErrorException e) {
