@@ -2,9 +2,7 @@ package com.microbank.document.service.impl;
 
 import com.microbank.document.exception.CustomException;
 import com.microbank.document.service.MinIOService;
-import io.minio.GetPresignedObjectUrlArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import io.minio.http.Method;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,16 @@ public class MinIOServiceImpl implements MinIOService {
     @Override
     public String uploadFile(String fileName, InputStream fileStream, String contentType) {
         try {
+            boolean bucketExists = minioClient.bucketExists(
+                    BucketExistsArgs.builder().bucket(bucketName).build()
+            );
+
+            if (!bucketExists) {
+                minioClient.makeBucket(
+                        MakeBucketArgs.builder().bucket(bucketName).build()
+                );
+            }
+
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)
