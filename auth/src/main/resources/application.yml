@@ -46,7 +46,7 @@ keycloak:
     client-id: "microbank-client"
     client-secret: "oVncCcoVMZCFRbiGA99ygvEcsclLcxW8"
   refresh-token:
-    grant-type: "refresh-token"
+    grant-type: "refresh_token"
   config:
     server-url: "http://localhost:9098"
     realm: "master"

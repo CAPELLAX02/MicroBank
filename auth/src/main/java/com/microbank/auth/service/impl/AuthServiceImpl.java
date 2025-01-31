@@ -293,6 +293,10 @@ public class AuthServiceImpl implements AuthService {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
+            System.out.println("Headers: " + headers);
+            System.out.println("Request Body: " + requestBody);
+            System.out.println("Keycloak URL: " + keycloakLoginUrl);
+
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     keycloakLoginUrl,
                     HttpMethod.POST,
@@ -303,7 +307,7 @@ public class AuthServiceImpl implements AuthService {
             return new BaseApiResponse<>(HttpStatus.OK.value(), "Token refreshed successfully.", response.getBody());
 
         } catch (Exception e) {
-            return new BaseApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Token refresh failed: " + e.getMessage(), null);
+            return new BaseApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Token refresh failed: " + Arrays.toString(e.getStackTrace()), null);
         }
     }
 
