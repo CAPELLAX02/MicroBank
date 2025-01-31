@@ -32,7 +32,7 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.getTransactionDocumentByTransactionId(transactionId));
     }
 
-    @GetMapping
+    @GetMapping("/admin/transactions")
     public ResponseEntity<BaseApiResponse<List<TransactionDocumentResponse>>> getAllTransactionDocuments() {
         return ResponseEntity.ok(documentService.getAllTransactionDocuments());
     }

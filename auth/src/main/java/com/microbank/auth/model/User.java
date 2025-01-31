@@ -38,9 +38,6 @@ public class User {
     @Column
     private boolean activated = false;
 
-    @Column
-    private String activationCode; // TODO: Maybe get rid of this column
-
     @Column(nullable = false)
     private boolean isBanned = false;
 
@@ -54,7 +51,6 @@ public class User {
             String email,
             String password,
             boolean activated,
-            String activationCode,
             boolean isBanned
     ) {
         this.id = id;
@@ -66,7 +62,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.activated = activated;
-        this.activationCode = activationCode;
         this.isBanned = isBanned;
     }
 
@@ -142,14 +137,6 @@ public class User {
 
     public void setActivated(boolean activated) {
         this.activated = activated;
-    }
-
-    public String getActivationCode() {
-        return activationCode;
-    }
-
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
     }
 
     public boolean isBanned() {

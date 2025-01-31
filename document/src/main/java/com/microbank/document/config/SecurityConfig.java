@@ -24,9 +24,9 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{documentId}").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{transactionId}").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/{documentId}").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/transactions/{transactionId}").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET,  "/api/v1/documents/admin/transactions").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

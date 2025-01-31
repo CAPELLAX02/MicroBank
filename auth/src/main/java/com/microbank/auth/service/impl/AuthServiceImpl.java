@@ -217,7 +217,6 @@ public class AuthServiceImpl implements AuthService {
             dbUser.setActivated(true);
             dbUser.setRole(UserRole.USER);
             dbUser.setBanned(false);
-            dbUser.setActivationCode(null);
 
             userRepository.save(dbUser);
 
@@ -356,7 +355,6 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-
     @Override
     public BaseApiResponse<UserResponse> resetPassword(ResetPasswordRequest request) {
         String redisKey = "forgot-password:" + request.email().trim().toLowerCase();
@@ -482,7 +480,6 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-//    @Transactional
     @Override
     public BaseApiResponse<UserResponse> updateUserRole(UpdateRoleRequest request) {
         User user = userRepository.findById(request.userId())
@@ -528,7 +525,6 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-//    @Transactional
     @Override
     public BaseApiResponse<UserResponse> updateUserAccess(UpdateAccessRequest request) {
         User user = userRepository.findById(request.userId())
